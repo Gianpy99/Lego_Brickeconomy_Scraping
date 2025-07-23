@@ -1,0 +1,47 @@
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+venv_py313/
+.venv/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output files
+output/
+*.xlsx
+*.csv
+*.json
+*.txt
+sample_lego_codes.xlsx
+lego_results.*
+scraping_summary.txt
+
+# Selenium and WebDriver
+chromedriver*
+geckodriver*
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp

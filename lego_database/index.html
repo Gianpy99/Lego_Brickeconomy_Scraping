@@ -1,21 +1,373 @@
 
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
-        <title>LEGO Database Landing Page</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>🧱 LEGO Brickeconomy Database</title>
         <style>
-            body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; }
-            .container { max-width: 600px; margin: 60px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
-            h1 { color: #2c3e50; margin-bottom: 30px; }
-            .btn { display: inline-block; margin: 20px 10px; padding: 18px 32px; font-size: 18px; border-radius: 8px; border: none; background: #3498db; color: white; text-decoration: none; box-shadow: 0 2px 8px rgba(52,152,219,0.1); transition: background 0.2s; }
-            .btn:hover { background: #217dbb; }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                color: #333;
+            }
+            
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            
+            .header {
+                text-align: center;
+                color: white;
+                margin-bottom: 40px;
+                animation: fadeInDown 1s ease-out;
+            }
+            
+            .header h1 {
+                font-size: 3em;
+                margin-bottom: 10px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            }
+            
+            .header p {
+                font-size: 1.2em;
+                opacity: 0.9;
+            }
+            
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 30px;
+                margin-bottom: 40px;
+            }
+            
+            .stats-card {
+                background: rgba(255,255,255,0.95);
+                border-radius: 20px;
+                padding: 30px;
+                text-align: center;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.2);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                animation: fadeInUp 1s ease-out;
+            }
+            
+            .stats-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            }
+            
+            .stats-card h2 {
+                color: #2c3e50;
+                margin-bottom: 20px;
+                font-size: 1.8em;
+            }
+            
+            .stat-item {
+                display: flex;
+                justify-content: space-between;
+                margin: 10px 0;
+                padding: 10px 0;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .stat-item:last-child {
+                border-bottom: none;
+            }
+            
+            .stat-label {
+                font-weight: 500;
+                color: #666;
+            }
+            
+            .stat-value {
+                font-weight: bold;
+                color: #2c3e50;
+                font-size: 1.1em;
+            }
+            
+            .last-update {
+                font-size: 0.9em;
+                color: #888;
+                text-align: center;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid #eee;
+            }
+            
+            @keyframes fadeInDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .navigation-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+                gap: 30px;
+                margin-bottom: 40px;
+            }
+            .nav-card {
+                background: rgba(255,255,255,0.97);
+                border-radius: 16px;
+                box-shadow: 0 4px 16px rgba(44,62,80,0.08);
+                padding: 28px 24px;
+                text-align: center;
+                text-decoration: none;
+                color: #2c3e50;
+                transition: box-shadow 0.2s, transform 0.2s;
+                display: block;
+                border: 1px solid #eee;
+            }
+            .nav-card:hover {
+                box-shadow: 0 8px 32px rgba(44,62,80,0.18);
+                transform: translateY(-4px) scale(1.03);
+                background: #f5f8ff;
+            }
+            .nav-card .icon {
+                font-size: 2.5em;
+                margin-bottom: 10px;
+                display: block;
+            }
+            .management-section {
+                margin-top: 40px;
+                background: rgba(255,255,255,0.97);
+                border-radius: 16px;
+                padding: 28px 24px;
+                box-shadow: 0 4px 16px rgba(44,62,80,0.08);
+            }
+            .action-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 18px;
+                margin-bottom: 24px;
+            }
+            .action-btn {
+                background: #3498db;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 14px 0;
+                font-size: 1.1em;
+                cursor: pointer;
+                transition: background 0.2s;
+                box-shadow: 0 2px 8px rgba(52,152,219,0.08);
+            }
+            .action-btn.secondary {
+                background: #95a5a6;
+            }
+            .action-btn:hover {
+                background: #217dbb;
+            }
+            .action-btn.secondary:hover {
+                background: #7f8c8d;
+            }
+            .database-info {
+                margin-top: 18px;
+                background: #f8faff;
+                border-radius: 8px;
+                padding: 16px;
+                font-size: 1em;
+                color: #2c3e50;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 40px;
+                color: #888;
+                font-size: 1em;
+            }
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>🧱 LEGO Database</h1>
-            <a href="LegoDatabase.html" class="btn">📦 Vai ai Set LEGO</a>
-            <a href="LegoDatabase_Minifig.html" class="btn">🧑‍🚀 Vai alle Minifig LEGO</a>
+            <div class="header">
+                <h1>🧱 LEGO Brickeconomy Database</h1>
+                <p>Comprehensive Lord of the Rings LEGO Collection Database</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <h2>📦 LEGO Sets</h2>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Processed:</span>
+                        <span class="stat-value">52</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Successfully Found:</span>
+                        <span class="stat-value">52</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">With Images:</span>
+                        <span class="stat-value">52</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Unique Themes:</span>
+                        <span class="stat-value">7</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Success Rate:</span>
+                        <span class="stat-value">
+                            100.0%
+                        </span>
+                    </div>
+                    <div class="last-update">Last Updated: Unknown</div>
+                </div>
+                
+                <div class="stats-card">
+                    <h2>🧑‍🚀 Minifigures</h2>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Processed:</span>
+                        <span class="stat-value">155</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Successfully Found:</span>
+                        <span class="stat-value">155</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">With Images:</span>
+                        <span class="stat-value">155</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Unique Years:</span>
+                        <span class="stat-value">8</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Success Rate:</span>
+                        <span class="stat-value">
+                            100.0%
+                        </span>
+                    </div>
+                    <div class="last-update">Last Updated: Unknown</div>
+                </div>
+            </div>
+        <div class="navigation-grid">
+                <a href="LegoDatabase.html" class="nav-card">
+                    <span class="icon">📦</span>
+                    <h3>LEGO Sets Database</h3>
+                    <p>Browse the complete collection of Lord of the Rings LEGO sets with detailed information, images, and pricing data.</p>
+                </a>
+                
+                <a href="LegoDatabase_Minifig.html" class="nav-card">
+                    <span class="icon">🧑‍🚀</span>
+                    <h3>Minifigures Database</h3>
+                    <p>Explore all Lord of the Rings minifigures with character details, appearance years, and set associations.</p>
+                </a>
+
+                <a href="analytics.html" class="nav-card">
+                    <span class="icon">📊</span>
+                    <h3>Analytics Dashboard</h3>
+                    <p>View advanced statistics and visualizations for your LEGO collection.</p>
+                </a>
+
+
+            </div>
+            
+            <div class="management-section">
+                <h2>🔧 Database Management</h2>
+                <div class="action-grid">
+                    <button class="action-btn" onclick="updateSets()">
+                        <span>🔄</span> Update Sets
+                    </button>
+                    <button class="action-btn" onclick="updateMinifigs()">
+                        <span>🔄</span> Update Minifigs
+                    </button>
+                    <button class="action-btn secondary" onclick="viewDatabase()">
+                        <span>🗄️</span> View Raw DB
+                    </button>
+                    <button class="action-btn secondary" onclick="exportData()">
+                        <span>📤</span> Export Data
+                    </button>
+                </div>
+                
+                <div class="database-info">
+                    <h3>📊 Database Information</h3>
+                    <p><strong>Database Location:</strong> lego_database/LegoDatabase.db</p>
+                    <p><strong>Last Updated:</strong> 2025-07-30 22:11:26</p>
+                    <p><strong>Total Records:</strong> 207</p>
+                    <p><strong>Storage:</strong> SQLite3 with image assets</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>🧱 LEGO Brickeconomy Database System</p>
+                <p>Data sourced from BrickEconomy.com | Built with Python & Selenium</p>
+            </div>
+        </div>
+        
+        <script>
+            function updateSets() {
+                if (confirm('This will update the LEGO sets database. This may take several minutes. Continue?')) {
+                    alert('Database update started. Check the console for progress.');
+                    // In a real implementation, this would trigger the Python script
+                    console.log('Starting LEGO sets database update...');
+                }
+            }
+            
+            function updateMinifigs() {
+                if (confirm('This will update the minifigures database. This may take several minutes. Continue?')) {
+                    alert('Minifigures update started. Check the console for progress.');
+                    // In a real implementation, this would trigger the Python script
+                    console.log('Starting minifigures database update...');
+                }
+            }
+            
+            function viewDatabase() {
+                alert('Database viewer functionality would open a detailed view of the SQLite database.');
+                console.log('Opening database viewer...');
+            }
+            
+            function exportData() {
+                alert('Export functionality would allow downloading data in various formats (CSV, JSON, Excel).');
+                console.log('Exporting database...');
+            }
+            
+            // Add some dynamic effects
+            document.addEventListener('DOMContentLoaded', function() {
+                // Animate stat values
+                const statValues = document.querySelectorAll('.stat-value');
+                statValues.forEach(stat => {
+                    const value = parseInt(stat.textContent);
+                    if (!isNaN(value)) {
+                        let current = 0;
+                        const increment = value / 50;
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= value) {
+                                current = value;
+                                clearInterval(timer);
+                            }
+                            stat.textContent = Math.floor(current);
+                        }, 20);
+                    }
+                });
+            });
+        </script>    
+            
         </div>
     </body>
     </html>

@@ -391,24 +391,27 @@ def create_minifig_html_report(df: pd.DataFrame, filename: str):
         <style>
             body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
             .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .minifig-card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0; display: flex; align-items: center; background: #f9f9f9; transition: transform 0.2s; }
-            .minifig-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-            .minifig-image { width: 150px; height: 150px; object-fit: contain; margin-right: 20px; border: 1px solid #ccc; background: white; border-radius: 5px; }
-            .minifig-info { flex: 1; }
-            .minifig-title { font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 10px; }
-            .minifig-details { margin: 5px 0; color: #666; }
-            .minifig-code { background: #3498db; color: white; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; }
-            .not-found { opacity: 0.6; background: #ffeaa7; }
-            .error { opacity: 0.6; background: #fab1a0; }
-            .summary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-            .summary h2 { margin-top: 0; }
-            .stats { display: flex; justify-content: space-around; margin: 15px 0; }
-            .stat { text-align: center; }
-            .stat-number { font-size: 24px; font-weight: bold; }
-            .stat-label { font-size: 14px; opacity: 0.9; }
+            .back-btn {
+                display: inline-block;
+                margin-bottom: 18px;
+                padding: 10px 22px;
+                font-size: 16px;
+                border-radius: 8px;
+                border: none;
+                background: #764ba2;
+                color: white;
+                text-decoration: none;
+                box-shadow: 0 2px 8px rgba(52,152,219,0.08);
+                transition: background 0.2s;
+            }
+            .back-btn:hover {
+                background: #667eea;
+            }
+            /* ...resto del CSS... */
         </style>
     </head>
     <body>
+        <a href="index.html" class="back-btn">⬅️ Back to Main Page</a>
         <div class="container">
             <h1>🧱 LEGO Minifigure Database Report</h1>
     """

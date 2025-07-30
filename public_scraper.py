@@ -26,7 +26,7 @@ class PublicLegoScraper(BrickEconomyScraper):
         self.skip_login = True
     
     def extract_public_set_data(self, lego_code: str) -> LegoSetDetails:
-        """Extract all available public data for a LEGO set"""
+        """Extract all available public data for a LEGO set with improved name extraction"""
         
         # Initialize with defaults
         details = LegoSetDetails(
@@ -47,43 +47,69 @@ class PublicLegoScraper(BrickEconomyScraper):
             if not self.search_lego_set(lego_code):
                 return details
             
-            # Try to click on first result and extract name
-            first_result_selectors = [
+            # Try to click on EXACT match first, then fallback to first result
+            exact_match_selectors = [
+                f'//a[contains(@href, "/{lego_code}-") or contains(@href, "/{lego_code}/") or @href[substring-after(., "/set/") = "{lego_code}"]]',
+                f'//a[contains(@href, "set/{lego_code}")]',
+                f'//tr[contains(., "{lego_code}")]//a[contains(@href, "set")]'
+            ]
+
+            # Fallback selectors (solo se non trova match esatto)
+            fallback_selectors = [
                 f'//*[@id="ContentPlaceHolder1_ctlSets_GridViewSets"]//tr[2]//a[contains(@href, "set")]',
-                f'//*[@id="ContentPlaceHolder1_ctlSets_GridViewSets"]//a[contains(@href, "set")]',
-                f'//a[contains(@href, "set") and contains(@href, "{lego_code}")]'
+                f'//*[@id="ContentPlaceHolder1_ctlSets_GridViewSets"]//a[contains(@href, "set")]'
             ]
             
             result_clicked = False
-            for selector in first_result_selectors:
+
+            # Prima prova i match esatti
+            print(f"🎯 Looking for EXACT match for {lego_code}")
+            for selector in exact_match_selectors:
                 try:
-                    element = self.wait_and_find_element(By.XPATH, selector, timeout=5)
+                    element = self.wait_and_find_element(By.XPATH, selector, timeout=3)
                     if element:
-                        # Extract set name from href or text
-                        try:
+                        href = element.get_attribute('href')
+                        print(f"✅ Found exact match: {href}")
+                        
+                        # Verify this is really our set
+                        if lego_code.lower() in href.lower():
+                            # Extract set name from parent row
+                            self._extract_name_from_search_results(element, details, lego_code)
+                            
+                            # Click the exact match
+                            self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+                            time.sleep(1)
+                            self.driver.execute_script("arguments[0].click();", element)
+                            result_clicked = True
+                            print(f"🎯 Clicked exact match for {lego_code}")
+                            break
+                except Exception as e:
+                    continue
+
+            # Se non trova match esatto, usa i fallback
+            if not result_clicked:
+                print(f"⚠️ No exact match found, trying fallback selectors...")
+                for selector in fallback_selectors:
+                    try:
+                        element = self.wait_and_find_element(By.XPATH, selector, timeout=5)
+                        if element:
+                            # Extract set name from href or text
                             href = element.get_attribute('href')
                             if href and lego_code.lower() in href.lower():
-                                # Get set name from parent elements
-                                parent_text = element.find_element(By.XPATH, './ancestor::tr').text
-                                for line in parent_text.split('\n'):
-                                    if lego_code in line and len(line.strip()) > len(lego_code):
-                                        details.official_name = line.strip()
-                                        break
-                                
-                                if details.official_name == "Not found":
-                                    details.official_name = f"LEGO Set {lego_code}"
-                        except:
-                            details.official_name = f"LEGO Set {lego_code}"
-                        
-                        # Scroll to element and click
-                        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
-                        time.sleep(1)
-                        self.driver.execute_script("arguments[0].click();", element)
-                        result_clicked = True
-                        break
-                except Exception as e:
-                    logger.debug(f"Selector {selector} failed: {str(e)}")
-                    continue
+                                self._extract_name_from_search_results(element, details, lego_code)
+                            else:
+                                details.official_name = f"LEGO Set {lego_code}"
+                            
+                            # Scroll to element and click
+                            self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+                            time.sleep(1)
+                            self.driver.execute_script("arguments[0].click();", element)
+                            result_clicked = True
+                            print(f"📋 Used fallback selector for {lego_code}")
+                            break
+                    except Exception as e:
+                        logger.debug(f"Selector {selector} failed: {str(e)}")
+                        continue
             
             if not result_clicked:
                 return details
@@ -92,17 +118,187 @@ class PublicLegoScraper(BrickEconomyScraper):
             time.sleep(2)
             self.handle_popups_and_cookies(aggressive=True)
             
-            # Extract data using multiple strategies
+            # NOW EXTRACT THE OFFICIAL NAME FROM THE SET PAGE
+            self._extract_official_name_from_page(details, lego_code)
+            
+            # Extract other data using multiple strategies
             self._extract_pieces(details)
             self._extract_minifigs(details)
             self._extract_dates(details)
             self._extract_prices(details)
             
             return details
-            
+                
         except Exception as e:
             logger.warning(f"Error extracting data for {lego_code}: {str(e)}")
-            return details
+        
+        return details
+    
+    def _extract_name_from_search_results(self, element, details: LegoSetDetails, lego_code: str):
+        """Extract name from search results table"""
+        try:
+            # Try to extract name from the link text first
+            link_text = element.text.strip()
+            if link_text and len(link_text) > len(lego_code) and lego_code not in link_text:
+                details.official_name = link_text
+                return
+            
+            # Extract from table row
+            try:
+                row = element.find_element(By.XPATH, './ancestor::tr')
+                cells = row.find_elements(By.TAG_NAME, 'td')
+                for cell in cells:
+                    cell_text = cell.text.strip()
+                    # Look for the name cell (usually contains set name, not just code)
+                    if (cell_text and 
+                        len(cell_text) > len(lego_code) + 3 and  # Must be longer than just the code
+                        not cell_text.replace(',', '').replace(' ', '').isdigit() and  # Not just numbers
+                        lego_code.lower() in cell_text.lower()):  # Contains the code
+                        # Clean up the name
+                        name = cell_text.replace(lego_code, '').strip()
+                        name = name.lstrip(':').lstrip('-').strip()  # Remove prefixes
+                        if name and len(name) > 3:
+                            details.official_name = f"{lego_code}: {name}"
+                            return
+            except:
+                pass
+            
+            # Fallback
+            details.official_name = f"LEGO Set {lego_code}"
+        except:
+            details.official_name = f"LEGO Set {lego_code}"
+    
+    def _extract_official_name_from_page(self, details: LegoSetDetails, lego_code: str):
+        """Extract official set name from the individual set page"""
+        
+        # Selectors for set name on the individual set page
+        name_selectors = [
+            # Page title or main heading
+            '//h1',
+            '//title',
+            '//*[@id="ContentPlaceHolder1_SetDetails"]//h1',
+            '//*[@id="ContentPlaceHolder1_SetDetails"]//h2',
+            # Look for set name in breadcrumbs or page header
+            '//div[contains(@class, "breadcrumb")]//text()[last()]',
+            # Look for the set name in the main content area
+            '//*[@id="ContentPlaceHolder1_PanelSetDetails"]//h1',
+            '//*[@id="ContentPlaceHolder1_PanelSetDetails"]//h2',
+            # Generic selectors for headings containing the LEGO code
+            f'//h1[contains(text(), "{lego_code}")]',
+            f'//h2[contains(text(), "{lego_code}")]',
+            f'//*[contains(@class, "title") or contains(@class, "heading")]//*[contains(text(), "{lego_code}")]',
+        ]
+        
+        for selector in name_selectors:
+            try:
+                element = self.wait_and_find_element(By.XPATH, selector, timeout=1)
+                if element:
+                    text = element.text.strip()
+                    if self._is_valid_set_name(text, lego_code):
+                        details.official_name = self._clean_set_name(text, lego_code)
+                        print(f"🏷️ Found official name from page: {details.official_name}")
+                        return
+            except:
+                continue
+        
+        # If still not found, try to get from page title
+        try:
+            page_title = self.driver.title
+            if page_title and self._is_valid_set_name(page_title, lego_code):
+                details.official_name = self._clean_set_name(page_title, lego_code)
+                print(f"🏷️ Found name from page title: {details.official_name}")
+                return
+        except:
+            pass
+        
+        # Try meta tags
+        meta_selectors = [
+            '//meta[@property="og:title"]',
+            '//meta[@name="title"]',
+        ]
+        
+        for selector in meta_selectors:
+            try:
+                element = self.wait_and_find_element(By.XPATH, selector, timeout=1)
+                if element:
+                    content = element.get_attribute('content')
+                    if content and self._is_valid_set_name(content, lego_code):
+                        details.official_name = self._clean_set_name(content, lego_code)
+                        print(f"🏷️ Found name from meta tag: {details.official_name}")
+                        return
+            except:
+                continue
+        
+        # Last resort: try to find any text containing the LEGO code
+        try:
+            elements = self.driver.find_elements(By.XPATH, f"//*[contains(text(), '{lego_code}')]")
+            for element in elements[:5]:  # Check first 5 matches
+                try:
+                    text = element.text.strip()
+                    if self._is_valid_set_name(text, lego_code):
+                        details.official_name = self._clean_set_name(text, lego_code)
+                        print(f"🏷️ Found name from last resort: {details.official_name}")
+                        return
+                except:
+                    continue
+        except:
+            pass
+
+    def _is_valid_set_name(self, text: str, lego_code: str) -> bool:
+        """Check if the extracted text looks like a valid LEGO set name"""
+        if not text or len(text) < len(lego_code) + 3:
+            return False
+        
+        # Must contain the LEGO code
+        if lego_code.lower() not in text.lower():
+            return False
+        
+        # Should not be just numbers or very short
+        if len(text.strip()) < 10:
+            return False
+        
+        # Exclude navigation elements and common page elements
+        exclude_terms = [
+            'brickeconomy', 'login', 'register', 'menu', 'navigation', 
+            'cookie', 'privacy', 'terms', 'contact', 'search', 'browse',
+            'sign in', 'sign up', 'cart', 'wishlist'
+        ]
+        
+        if any(term in text.lower() for term in exclude_terms):
+            return False
+        
+        return True
+
+    def _clean_set_name(self, text: str, lego_code: str) -> str:
+        """Clean and format the extracted set name"""
+        # Remove common prefixes/suffixes
+        text = text.replace('BrickEconomy', '').replace('LEGO', '').strip()
+        
+        # Remove extra whitespace and newlines
+        text = ' '.join(text.split())
+        
+        # If the name doesn't start with the LEGO code, prepend it
+        if not text.startswith(lego_code):
+            # Try to find where the code appears and restructure
+            if lego_code in text:
+                parts = text.split(lego_code, 1)
+                if len(parts) == 2:
+                    name_part = parts[1].strip().lstrip(':').lstrip('-').strip()
+                    if name_part:
+                        text = f"{lego_code}: {name_part}"
+                    else:
+                        text = f"{lego_code}: {parts[0].strip()}"
+            else:
+                text = f"{lego_code}: {text}"
+        
+        # Clean up formatting
+        text = text.replace('  ', ' ').strip()
+        
+        # Remove trailing punctuation that doesn't belong
+        while text.endswith(('|', '-', ':', ';')) and len(text) > len(lego_code) + 2:
+            text = text[:-1].strip()
+        
+        return text
     
     def _extract_pieces(self, details: LegoSetDetails):
         """Extract piece count with improved selectors"""

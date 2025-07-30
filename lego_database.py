@@ -8,10 +8,8 @@ import requests
 import time
 from typing import List, Dict, Optional
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
-from public_scraper import PublicLegoScraper, scrape_lego_codes_fast
+from public_scraper import PublicLegoScraper
 from config import Config
-from models import LegoSetDetails
 import pandas as pd
 import sqlite3
 from PIL import Image

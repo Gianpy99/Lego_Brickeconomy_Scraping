@@ -1,0 +1,2691 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>LEGO Minifigure Database Report</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+            .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .minifig-card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 10px 0; display: flex; align-items: center; background: #f9f9f9; transition: transform 0.2s; }
+            .minifig-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+            .minifig-image { width: 150px; height: 150px; object-fit: contain; margin-right: 20px; border: 1px solid #ccc; background: white; border-radius: 5px; }
+            .minifig-info { flex: 1; }
+            .minifig-title { font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 10px; }
+            .minifig-details { margin: 5px 0; color: #666; }
+            .minifig-code { background: #3498db; color: white; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+            .not-found { opacity: 0.6; background: #ffeaa7; }
+            .error { opacity: 0.6; background: #fab1a0; }
+            .summary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+            .summary h2 { margin-top: 0; }
+            .stats { display: flex; justify-content: space-around; margin: 15px 0; }
+            .stat { text-align: center; }
+            .stat-number { font-size: 24px; font-weight: bold; }
+            .stat-label { font-size: 14px; opacity: 0.9; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🧱 LEGO Minifigure Database Report</h1>
+    
+            <div class="summary">
+                <h2>📊 Database Summary</h2>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-number">155</div>
+                        <div class="stat-label">Total Processed</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">155</div>
+                        <div class="stat-label">Successfully Found</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">155</div>
+                        <div class="stat-label">With Images</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">100.0%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+            <h2>🧑‍🚀 Minifigure Details</h2>
+    
+            <div class="minifig-card">
+                <img src="images/lor001.jpg" class="minifig-image" alt="LEGO lor001">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor001</span>
+                        Gandalf the Grey
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £8.26</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9469 Gandalf Arrives</li><li>30213 Gandalf at Dol Guldur</li><li>79003 An Unexpected Gathering</li><li>79010 The Goblin King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor002.jpg" class="minifig-image" alt="LEGO lor002">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor002</span>
+                        Frodo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £9.98</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9469 Gandalf Arrives</li><li>30210 Frodo with Cooking Corner</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor003.jpg" class="minifig-image" alt="LEGO lor003">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor003</span>
+                        Frodo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £15.33</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9470 Shelob Attacks</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor004.jpg" class="minifig-image" alt="LEGO lor004">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor004</span>
+                        Samwise Gamgee
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £20.75</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9470 Shelob Attacks</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor005.jpg" class="minifig-image" alt="LEGO lor005">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor005</span>
+                        Gollum
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £15.76</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9470 Shelob Attacks</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor006.jpg" class="minifig-image" alt="LEGO lor006">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor006</span>
+                        Uruk-hai
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £20.30</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9471 Uruk-Hai Army</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor007.jpg" class="minifig-image" alt="LEGO lor007">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor007</span>
+                        Uruk-hai
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £18.83</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9471 Uruk-Hai Army</li><li>9474 The Battle Of Helm's Deep</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor008.jpg" class="minifig-image" alt="LEGO lor008">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor008</span>
+                        Uruk-hai
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £22.28</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9471 Uruk-Hai Army</li><li>9474 The Battle Of Helm's Deep</li><li>30211 Uruk-Hai with Ballista</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor009.jpg" class="minifig-image" alt="LEGO lor009">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor009</span>
+                        Rohan Soldier
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £39.65</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9471 Uruk-Hai Army</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor010.jpg" class="minifig-image" alt="LEGO lor010">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor010</span>
+                        Eomer
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £41.74</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9471 Uruk-Hai Army</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor011.jpg" class="minifig-image" alt="LEGO lor011">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor011</span>
+                        Moria Orc
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £24.58</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9473 The Mines of Moria</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor012.jpg" class="minifig-image" alt="LEGO lor012">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor012</span>
+                        Pippin
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £31.11</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9473 The Mines of Moria</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor013.jpg" class="minifig-image" alt="LEGO lor013">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor013</span>
+                        Gimli
+                    </div>
+                    <div class="minifig-details"></div>
+                    <div class="minifig-details">💰 £12.81</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9473 The Mines of Moria</li><li>9474 The Battle Of Helm's Deep</li><li>79006 The Council of Elrond</li><li>79008 Pirate Ship Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor014.jpg" class="minifig-image" alt="LEGO lor014">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor014</span>
+                        Boromir
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £26.54</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9473 The Mines of Moria</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor015.jpg" class="minifig-image" alt="LEGO lor015">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor015</span>
+                        Legolas
+                    </div>
+                    <div class="minifig-details"></div>
+                    <div class="minifig-details">💰 £18.49</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9473 The Mines of Moria</li><li>79008 Pirate Ship Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor016.jpg" class="minifig-image" alt="LEGO lor016">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor016</span>
+                        Merry
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £45.68</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9472 Attack On Weathertop</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor017.jpg" class="minifig-image" alt="LEGO lor017">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor017</span>
+                        Aragorn
+                    </div>
+                    <div class="minifig-details"></div>
+                    <div class="minifig-details">💰 £23.69</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9472 Attack On Weathertop</li><li>9474 The Battle Of Helm's Deep</li><li>79008 Pirate Ship Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor018.jpg" class="minifig-image" alt="LEGO lor018">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor018</span>
+                        Ringwraith
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £41.85</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9472 Attack On Weathertop</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor019.jpg" class="minifig-image" alt="LEGO lor019">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor019</span>
+                        Uruk-hai
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £17.97</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9474 The Battle Of Helm's Deep</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor020.jpg" class="minifig-image" alt="LEGO lor020">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor020</span>
+                        Haldir
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £48.09</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9474 The Battle Of Helm's Deep</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor021.jpg" class="minifig-image" alt="LEGO lor021">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor021</span>
+                        King Theoden
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £89.00</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9474 The Battle Of Helm's Deep</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor022.jpg" class="minifig-image" alt="LEGO lor022">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor022</span>
+                        Uruk-hai
+                    </div>
+                    <div class="minifig-details"></div>
+                    <div class="minifig-details">💰 £44.07</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10237 Tower of Orthanc</li><li>9476 The Orc Forge</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor023.jpg" class="minifig-image" alt="LEGO lor023">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor023</span>
+                        Mordor Orc
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £23.63</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9476 The Orc Forge</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor024.jpg" class="minifig-image" alt="LEGO lor024">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor024</span>
+                        Mordor Orc
+                    </div>
+                    <div class="minifig-details"></div>
+                    <div class="minifig-details">💰 £17.61</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10237 Tower of Orthanc</li><li>9476 The Orc Forge</li><li>79007 Battle at the Black Gate</li><li>79008 Pirate Ship Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor025.jpg" class="minifig-image" alt="LEGO lor025">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor025</span>
+                        Lurtz
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £21.87</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9476 The Orc Forge</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor026.jpg" class="minifig-image" alt="LEGO lor026">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor026</span>
+                        Mirkwood Elf Guard
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £23.26</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>30212 Mirkwood Elf Guard</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor027.jpg" class="minifig-image" alt="LEGO lor027">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor027</span>
+                        Big Fig Cave Troll
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £92.45</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9473 The Mines of Moria</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor028.jpg" class="minifig-image" alt="LEGO lor028">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor028</span>
+                        Frodo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £17.52</div>
+                    <div class="minifig-details">📅 Released: May 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>9472 Attack On Weathertop</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor029.jpg" class="minifig-image" alt="LEGO lor029">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor029</span>
+                        Bilbo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £19.84</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79003 An Unexpected Gathering</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor030.jpg" class="minifig-image" alt="LEGO lor030">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor030</span>
+                        Bilbo Baggins
+                    </div>
+                    <div class="minifig-details"></div>
+                    <div class="minifig-details">💰 £11.30</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79013 Lake-town Chase</li><li>San Diego Comic-Con 2013 Micro Scale Bag End</li><li>79000 Riddles for the Ring</li><li>79004 Barrel Escape</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor031.jpg" class="minifig-image" alt="LEGO lor031">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor031</span>
+                        Gollum
+                    </div>
+                    <div class="minifig-details"></div>
+                    <div class="minifig-details">💰 £11.53</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79000 Riddles for the Ring</li><li>71218 Gollum</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor032.jpg" class="minifig-image" alt="LEGO lor032">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor032</span>
+                        Goblin Soldier
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £21.54</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79010 The Goblin King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor033.jpg" class="minifig-image" alt="LEGO lor033">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor033</span>
+                        Elrond
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £33.35</div>
+                    <div class="minifig-details">📅 Released: N/A</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>5000202 Elrond</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor034.jpg" class="minifig-image" alt="LEGO lor034">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor034</span>
+                        Tauriel
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £19.75</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79001 Escape from Mirkwood Spiders</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor035.jpg" class="minifig-image" alt="LEGO lor035">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor035</span>
+                        Legolas Greenleaf
+                    </div>
+                    <div class="minifig-details"></div>
+                    <div class="minifig-details">💰 £11.98</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79017 The Battle of Five Armies</li><li>79001 Escape from Mirkwood Spiders</li><li>30215 Legolas Greenleaf</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor036.jpg" class="minifig-image" alt="LEGO lor036">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor036</span>
+                        Fili the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £20.49</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79001 Escape from Mirkwood Spiders</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor037.jpg" class="minifig-image" alt="LEGO lor037">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor037</span>
+                        Kili the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £22.89</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79001 Escape from Mirkwood Spiders</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor038.jpg" class="minifig-image" alt="LEGO lor038">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor038</span>
+                        Yazneg
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £8.08</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79002 Attack of the Wargs</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor039.jpg" class="minifig-image" alt="LEGO lor039">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor039</span>
+                        Hunter Orc
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £20.37</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79002 Attack of the Wargs</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor040.jpg" class="minifig-image" alt="LEGO lor040">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor040</span>
+                        Thorin Oakenshield
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £26.37</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79002 Attack of the Wargs</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor041.jpg" class="minifig-image" alt="LEGO lor041">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor041</span>
+                        Bifur the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £22.15</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79002 Attack of the Wargs</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor042.jpg" class="minifig-image" alt="LEGO lor042">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor042</span>
+                        Big Fig Goblin King
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £44.86</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79010 The Goblin King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor043.jpg" class="minifig-image" alt="LEGO lor043">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor043</span>
+                        Goblin Soldier
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £21.78</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79010 The Goblin King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor044.jpg" class="minifig-image" alt="LEGO lor044">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor044</span>
+                        Goblin Scribe
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £21.84</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79010 The Goblin King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor045.jpg" class="minifig-image" alt="LEGO lor045">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor045</span>
+                        Ori the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £38.55</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79010 The Goblin King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor046.jpg" class="minifig-image" alt="LEGO lor046">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor046</span>
+                        Nori the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £46.34</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79010 The Goblin King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor047.jpg" class="minifig-image" alt="LEGO lor047">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor047</span>
+                        Dori the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £34.03</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79010 The Goblin King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor048.jpg" class="minifig-image" alt="LEGO lor048">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor048</span>
+                        Hunter Orc
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £19.95</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79002 Attack of the Wargs</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor049.jpg" class="minifig-image" alt="LEGO lor049">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor049</span>
+                        Balin the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £31.05</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79003 An Unexpected Gathering</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor050.jpg" class="minifig-image" alt="LEGO lor050">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor050</span>
+                        Dwalin the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £35.36</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79003 An Unexpected Gathering</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor051.jpg" class="minifig-image" alt="LEGO lor051">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor051</span>
+                        Bombur the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £33.49</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79003 An Unexpected Gathering</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor052.jpg" class="minifig-image" alt="LEGO lor052">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor052</span>
+                        Bofur the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £39.16</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79003 An Unexpected Gathering</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor053.jpg" class="minifig-image" alt="LEGO lor053">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor053</span>
+                        Mirkwood Elf Guard
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £15.79</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79004 Barrel Escape</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor054.jpg" class="minifig-image" alt="LEGO lor054">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor054</span>
+                        Mirkwood Elf Chief
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £19.71</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79004 Barrel Escape</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor055.jpg" class="minifig-image" alt="LEGO lor055">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor055</span>
+                        Gloin the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £47.01</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79004 Barrel Escape</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor056.jpg" class="minifig-image" alt="LEGO lor056">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor056</span>
+                        Oin the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2012</div>
+                    <div class="minifig-details">💰 £62.96</div>
+                    <div class="minifig-details">📅 Released: November 2012</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79004 Barrel Escape</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor057.jpg" class="minifig-image" alt="LEGO lor057">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor057</span>
+                        Bilbo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £78.98</div>
+                    <div class="minifig-details">📅 Released: N/A</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>The Hobbit - An Unexpected Journey Blu-Ray with Bilbo Baggins Minifigure</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor058.jpg" class="minifig-image" alt="LEGO lor058">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor058</span>
+                        Saruman
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £49.53</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79005 The Wizard Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor059.jpg" class="minifig-image" alt="LEGO lor059">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor059</span>
+                        Elrond
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £31.26</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79006 The Council of Elrond</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor060.jpg" class="minifig-image" alt="LEGO lor060">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor060</span>
+                        Arwen
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £45.32</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79006 The Council of Elrond</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor061.jpg" class="minifig-image" alt="LEGO lor061">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor061</span>
+                        Gandalf the Grey
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £7.83</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79005 The Wizard Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor062.jpg" class="minifig-image" alt="LEGO lor062">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor062</span>
+                        Frodo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £13.32</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79006 The Council of Elrond</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor063.jpg" class="minifig-image" alt="LEGO lor063">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor063</span>
+                        Gandalf the White
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £62.64</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79007 Battle at the Black Gate</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor064.jpg" class="minifig-image" alt="LEGO lor064">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor064</span>
+                        Mouth of Sauron
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £71.08</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79007 Battle at the Black Gate</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor065.jpg" class="minifig-image" alt="LEGO lor065">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor065</span>
+                        Mordor Orc
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £22.96</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79007 Battle at the Black Gate</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor066.jpg" class="minifig-image" alt="LEGO lor066">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor066</span>
+                        Aragorn
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £82.71</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79007 Battle at the Black Gate</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor067.jpg" class="minifig-image" alt="LEGO lor067">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor067</span>
+                        Pirate of Umbar
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £22.59</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79008 Pirate Ship Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor068.jpg" class="minifig-image" alt="LEGO lor068">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor068</span>
+                        Mordor Orc
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £20.37</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79008 Pirate Ship Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor069.jpg" class="minifig-image" alt="LEGO lor069">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor069</span>
+                        Soldier of the Dead 1
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £56.04</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79008 Pirate Ship Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor070.jpg" class="minifig-image" alt="LEGO lor070">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor070</span>
+                        Soldier of the Dead 2
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £61.09</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79008 Pirate Ship Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor071.jpg" class="minifig-image" alt="LEGO lor071">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor071</span>
+                        King of the Dead
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £47.56</div>
+                    <div class="minifig-details">📅 Released: June 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79008 Pirate Ship Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor072.jpg" class="minifig-image" alt="LEGO lor072">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor072</span>
+                        Grima Wormtongue
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £181.71</div>
+                    <div class="minifig-details">📅 Released: July 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10237 Tower of Orthanc</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor073.jpg" class="minifig-image" alt="LEGO lor073">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor073</span>
+                        Gandalf the Grey
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £13.97</div>
+                    <div class="minifig-details">📅 Released: July 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10237 Tower of Orthanc</li><li>79014 Dol Guldur Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor074.jpg" class="minifig-image" alt="LEGO lor074">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor074</span>
+                        Saruman
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £86.90</div>
+                    <div class="minifig-details">📅 Released: July 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10237 Tower of Orthanc</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor075.jpg" class="minifig-image" alt="LEGO lor075">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor075</span>
+                        Beorn
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £13.54</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79011 Dol Guldur Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor076.jpg" class="minifig-image" alt="LEGO lor076">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor076</span>
+                        Gundabad Orc
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £15.80</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79011 Dol Guldur Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor077.jpg" class="minifig-image" alt="LEGO lor077">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor077</span>
+                        Gundabad Orc
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £19.74</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79011 Dol Guldur Ambush</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor078.jpg" class="minifig-image" alt="LEGO lor078">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor078</span>
+                        Mirkwood Elf Archer
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £17.10</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79012 Mirkwood Elf Army</li><li>Mirkwood Elf</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor079.jpg" class="minifig-image" alt="LEGO lor079">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor079</span>
+                        Thranduil
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £31.05</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79012 Mirkwood Elf Army</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor080.jpg" class="minifig-image" alt="LEGO lor080">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor080</span>
+                        Mirkwood Elf
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £15.81</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79012 Mirkwood Elf Army</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor081.jpg" class="minifig-image" alt="LEGO lor081">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor081</span>
+                        Necromancer of Dol Guldur
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £9.80</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79014 Dol Guldur Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor082.jpg" class="minifig-image" alt="LEGO lor082">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor082</span>
+                        Radagast
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £93.82</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79014 Dol Guldur Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor083.jpg" class="minifig-image" alt="LEGO lor083">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor083</span>
+                        Thorin Oakenshield
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £30.19</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79013 Lake-town Chase</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor084.jpg" class="minifig-image" alt="LEGO lor084">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor084</span>
+                        Bard the Bowman
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £15.80</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79013 Lake-town Chase</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor085.jpg" class="minifig-image" alt="LEGO lor085">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor085</span>
+                        Master of Lake-town
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £31.43</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79013 Lake-town Chase</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor086.jpg" class="minifig-image" alt="LEGO lor086">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor086</span>
+                        Lake-town Guard
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £35.23</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>30216 Lake-town Guard</li><li>79013 Lake-town Chase</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor087.jpg" class="minifig-image" alt="LEGO lor087">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor087</span>
+                        Azog
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £48.27</div>
+                    <div class="minifig-details">📅 Released: July 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79014 Dol Guldur Battle</li><li>San Diego Comic-Con 2013 Azog Minifigure</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor088.jpg" class="minifig-image" alt="LEGO lor088">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor088</span>
+                        Gundabad Orc
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £11.75</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79012 Mirkwood Elf Army</li><li>79014 Dol Guldur Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor089.jpg" class="minifig-image" alt="LEGO lor089">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor089</span>
+                        Gundabad Orc
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £17.41</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79012 Mirkwood Elf Army</li><li>79014 Dol Guldur Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor090.jpg" class="minifig-image" alt="LEGO lor090">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor090</span>
+                        Statue at Dol Guldur
+                    </div>
+                    <div class="minifig-details">📅 2013</div>
+                    <div class="minifig-details">💰 £14.53</div>
+                    <div class="minifig-details">📅 Released: December 2013</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79014 Dol Guldur Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor091.jpg" class="minifig-image" alt="LEGO lor091">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor091</span>
+                        Bilbo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £35.39</div>
+                    <div class="minifig-details">📅 Released: April 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>5002130 Good Morning Bilbo Baggins</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor092.jpg" class="minifig-image" alt="LEGO lor092">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor092</span>
+                        Bard the Bowman
+                    </div>
+                    <div class="minifig-details"></div>
+                    <div class="minifig-details">💰 £15.08</div>
+                    <div class="minifig-details">📅 Released: July 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>The Hobbit The Battle of the Five Armies DVD/Blu-ray</li><li>79017 The Battle of Five Armies</li><li>San Diego Comic-Con 2014 Bard the Bowman</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor093.jpg" class="minifig-image" alt="LEGO lor093">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor093</span>
+                        Bilbo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £24.30</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79018 The Lonely Mountain</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor094.jpg" class="minifig-image" alt="LEGO lor094">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor094</span>
+                        Balin the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £28.68</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79018 The Lonely Mountain</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor095.jpg" class="minifig-image" alt="LEGO lor095">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor095</span>
+                        Dwalin the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £34.97</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79018 The Lonely Mountain</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor096.jpg" class="minifig-image" alt="LEGO lor096">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor096</span>
+                        Kili the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £29.10</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79018 The Lonely Mountain</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor097.jpg" class="minifig-image" alt="LEGO lor097">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor097</span>
+                        Fili the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £31.66</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79018 The Lonely Mountain</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor098.jpg" class="minifig-image" alt="LEGO lor098">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor098</span>
+                        Tauriel
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £17.87</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79016 Attack on Lake-town</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor099.jpg" class="minifig-image" alt="LEGO lor099">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor099</span>
+                        Bard the Bowman
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £15.71</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79016 Attack on Lake-town</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor100.jpg" class="minifig-image" alt="LEGO lor100">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor100</span>
+                        Bain Son of Bard
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £11.55</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79016 Attack on Lake-town</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor101.jpg" class="minifig-image" alt="LEGO lor101">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor101</span>
+                        Hunter Orc
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £25.52</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79016 Attack on Lake-town</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor102.jpg" class="minifig-image" alt="LEGO lor102">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor102</span>
+                        Hunter Orc
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £27.05</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79016 Attack on Lake-town</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor103.jpg" class="minifig-image" alt="LEGO lor103">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor103</span>
+                        Galadriel
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £47.35</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79015 Witch-King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor104.jpg" class="minifig-image" alt="LEGO lor104">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor104</span>
+                        Witch-King
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £33.60</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79015 Witch-King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor105.jpg" class="minifig-image" alt="LEGO lor105">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor105</span>
+                        Elrond
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £23.04</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79015 Witch-King Battle</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor106.jpg" class="minifig-image" alt="LEGO lor106">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor106</span>
+                        Thorin Oakenshield
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £55.96</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79017 The Battle of Five Armies</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor107.jpg" class="minifig-image" alt="LEGO lor107">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor107</span>
+                        Dain Ironfoot
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £74.78</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79017 The Battle of Five Armies</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor109.jpg" class="minifig-image" alt="LEGO lor109">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor109</span>
+                        Azog
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £66.53</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79017 The Battle of Five Armies</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor110.jpg" class="minifig-image" alt="LEGO lor110">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor110</span>
+                        Gundabad Orc
+                    </div>
+                    <div class="minifig-details">📅 2014</div>
+                    <div class="minifig-details">💰 £14.78</div>
+                    <div class="minifig-details">📅 Released: October 2014</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>79017 The Battle of Five Armies</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor111.jpg" class="minifig-image" alt="LEGO lor111">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor111</span>
+                        Bain Son of Bard
+                    </div>
+                    <div class="minifig-details">📅 2015</div>
+                    <div class="minifig-details">💰 £11.70</div>
+                    <div class="minifig-details">📅 Released: N/A</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>The Hobbit The Battle of the Five Armies DVD/Blu-ray</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor112.jpg" class="minifig-image" alt="LEGO lor112">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor112</span>
+                        Frodo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £12.70</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor113.jpg" class="minifig-image" alt="LEGO lor113">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor113</span>
+                        Samwise Gamgee (Sam)
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £12.44</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor114.jpg" class="minifig-image" alt="LEGO lor114">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor114</span>
+                        Elf Statue
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £2.87</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor115.jpg" class="minifig-image" alt="LEGO lor115">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor115</span>
+                        Elf Statue
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £2.90</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor116.jpg" class="minifig-image" alt="LEGO lor116">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor116</span>
+                        Elf Statue
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £3.38</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor117.jpg" class="minifig-image" alt="LEGO lor117">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor117</span>
+                        Bilbo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £8.39</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor118.jpg" class="minifig-image" alt="LEGO lor118">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor118</span>
+                        Gloin the Dwarf
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £8.30</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor119.jpg" class="minifig-image" alt="LEGO lor119">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor119</span>
+                        Gimli
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £14.38</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor120.jpg" class="minifig-image" alt="LEGO lor120">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor120</span>
+                        Rivendell Elf
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £10.17</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor121.jpg" class="minifig-image" alt="LEGO lor121">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor121</span>
+                        Arwen
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £13.43</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor122.jpg" class="minifig-image" alt="LEGO lor122">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor122</span>
+                        Rivendell Elf
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £9.20</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor123.jpg" class="minifig-image" alt="LEGO lor123">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor123</span>
+                        Peregrin Took (Pippin)
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £13.65</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor124.jpg" class="minifig-image" alt="LEGO lor124">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor124</span>
+                        Meriadoc Brandybuck (Merry)
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £13.82</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor125.jpg" class="minifig-image" alt="LEGO lor125">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor125</span>
+                        Gandalf the Grey
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £13.62</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor126.jpg" class="minifig-image" alt="LEGO lor126">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor126</span>
+                        Boromir
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £12.96</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor127.jpg" class="minifig-image" alt="LEGO lor127">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor127</span>
+                        Legolas
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £11.30</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor128.jpg" class="minifig-image" alt="LEGO lor128">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor128</span>
+                        Elrond
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £12.49</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor129.jpg" class="minifig-image" alt="LEGO lor129">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor129</span>
+                        Aragorn
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £13.06</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor130.jpg" class="minifig-image" alt="LEGO lor130">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor130</span>
+                        Elf Statue
+                    </div>
+                    <div class="minifig-details">📅 2023</div>
+                    <div class="minifig-details">💰 £3.38</div>
+                    <div class="minifig-details">📅 Released: March 2023</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10316 The Lord of the Rings Rivendell</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor131.jpg" class="minifig-image" alt="LEGO lor131">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor131</span>
+                        Frodo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £6.38</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10333 The Lord of the Rings Barad-Dur</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor132.jpg" class="minifig-image" alt="LEGO lor132">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor132</span>
+                        Samwise Gamgee
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £6.30</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10333 The Lord of the Rings Barad-Dur</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor133.jpg" class="minifig-image" alt="LEGO lor133">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor133</span>
+                        Gollum
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £7.81</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10333 The Lord of the Rings Barad-Dur</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor134.jpg" class="minifig-image" alt="LEGO lor134">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor134</span>
+                        Orc
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £16.32</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10333 The Lord of the Rings Barad-Dur</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor135.jpg" class="minifig-image" alt="LEGO lor135">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor135</span>
+                        Orc
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £14.56</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10333 The Lord of the Rings Barad-Dur</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor136.jpg" class="minifig-image" alt="LEGO lor136">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor136</span>
+                        Gothmog
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £17.93</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10333 The Lord of the Rings Barad-Dur</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor137.jpg" class="minifig-image" alt="LEGO lor137">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor137</span>
+                        Orc
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £14.73</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10333 The Lord of the Rings Barad-Dur</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor138.jpg" class="minifig-image" alt="LEGO lor138">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor138</span>
+                        Orc
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £12.84</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10333 The Lord of the Rings Barad-Dur</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor139.jpg" class="minifig-image" alt="LEGO lor139">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor139</span>
+                        Sauron
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £60.28</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10333 The Lord of the Rings Barad-Dur</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor140.jpg" class="minifig-image" alt="LEGO lor140">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor140</span>
+                        Mouth of Sauron
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £26.50</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10333 The Lord of the Rings Barad-Dur</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor141.jpg" class="minifig-image" alt="LEGO lor141">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor141</span>
+                        Ringwraith (Nazgûl)
+                    </div>
+                    <div class="minifig-details">📅 2024</div>
+                    <div class="minifig-details">💰 £10.15</div>
+                    <div class="minifig-details">📅 Released: June 2024</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>40693 Fell Beast</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor142.jpg" class="minifig-image" alt="LEGO lor142">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor142</span>
+                        Gandalf the Grey
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £11.34</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10354 The Lord of the Rings The Shire</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor143.jpg" class="minifig-image" alt="LEGO lor143">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor143</span>
+                        Frodo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £11.72</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10354 The Lord of the Rings The Shire</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor144.jpg" class="minifig-image" alt="LEGO lor144">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor144</span>
+                        Bilbo Baggins
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £10.43</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10354 The Lord of the Rings The Shire</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor145.jpg" class="minifig-image" alt="LEGO lor145">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor145</span>
+                        Samwise Gamgee
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £10.97</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10354 The Lord of the Rings The Shire</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor146.jpg" class="minifig-image" alt="LEGO lor146">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor146</span>
+                        Mrs. Proudfoot
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £11.10</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10354 The Lord of the Rings The Shire</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor147.jpg" class="minifig-image" alt="LEGO lor147">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor147</span>
+                        Farmer Odo Proudfoot
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £10.43</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10354 The Lord of the Rings The Shire</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor148.jpg" class="minifig-image" alt="LEGO lor148">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor148</span>
+                        Meriadoc Brandybuck
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £11.03</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10354 The Lord of the Rings The Shire</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor149.jpg" class="minifig-image" alt="LEGO lor149">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor149</span>
+                        Peregrin Took
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £11.20</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10354 The Lord of the Rings The Shire</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor150.jpg" class="minifig-image" alt="LEGO lor150">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor150</span>
+                        Rose Cotton
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £11.68</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10354 The Lord of the Rings The Shire</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor151.jpg" class="minifig-image" alt="LEGO lor151">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor151</span>
+                        Deagol
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £25.20</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>40761 The Lord of the Rings Smeagol & Deagol</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor152.jpg" class="minifig-image" alt="LEGO lor152">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor152</span>
+                        Smeagol
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £25.01</div>
+                    <div class="minifig-details">📅 Released: April 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>40761 The Lord of the Rings Smeagol & Deagol</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/lor153.jpg" class="minifig-image" alt="LEGO lor153">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">lor153</span>
+                        Gandalf the Grey
+                    </div>
+                    <div class="minifig-details">📅 2025</div>
+                    <div class="minifig-details">💰 £8.93</div>
+                    <div class="minifig-details">📅 Released: June 2025</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>10367 The Lord of the Rings Balrog Book Nook</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/dim001.jpg" class="minifig-image" alt="LEGO dim001">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">dim001</span>
+                        Gandalf
+                    </div>
+                    <div class="minifig-details">📅 2015</div>
+                    <div class="minifig-details">💰 £6.07</div>
+                    <div class="minifig-details">📅 Released: September 2015</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>71170 Starter Pack PS3</li><li>71171 Starter Pack PS4</li><li>71172 Starter Pack Xbox One</li><li>71173 Starter Pack Xbox 360</li><li>71174 Starter Pack Wii U</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/dim007.jpg" class="minifig-image" alt="LEGO dim007">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">dim007</span>
+                        Gimli
+                    </div>
+                    <div class="minifig-details">📅 2015</div>
+                    <div class="minifig-details">💰 £9.90</div>
+                    <div class="minifig-details">📅 Released: September 2015</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>71220 Gimli</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="minifig-card">
+                <img src="images/dim008.jpg" class="minifig-image" alt="LEGO dim008">
+                <div class="minifig-info">
+                    <div class="minifig-title">
+                        <span class="minifig-code">dim008</span>
+                        Legolas
+                    </div>
+                    <div class="minifig-details">📅 2015</div>
+                    <div class="minifig-details">💰 £14.60</div>
+                    <div class="minifig-details">📅 Released: September 2015</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        <ul style="margin:4px 0 0 18px;"><li>71219 Legolas</li></ul>
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </body>
+    </html>
+    

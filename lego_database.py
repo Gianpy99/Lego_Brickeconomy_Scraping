@@ -223,7 +223,7 @@ def create_lego_database(lego_codes: List[str], headless: bool = True) -> pd.Dat
     
     config = Config()
     config.HEADLESS = headless
-    config.WAIT_TIME = 1
+    config.WAIT_TIME = 0.1
     
     print(f"🏗️ CREATING LEGO DATABASE")
     print(f"📦 Processing {len(lego_codes)} sets with images")
@@ -231,11 +231,15 @@ def create_lego_database(lego_codes: List[str], headless: bool = True) -> pd.Dat
     
     all_data = []
     start_time = time.time()
-    
+        # Carica i codici già presenti
+    existing_codes = get_existing_lego_codes()
+
     with EnhancedLegoScraper(config) as scraper:
         for i, code in enumerate(lego_codes, 1):
+            if code in existing_codes:
+                print(f"⏩ {code} già presente nel database, salto scraping.")
+                continue
             print(f"📦 Processing {i}/{len(lego_codes)}: {code}")
-            
             try:
                 data = scraper.extract_enhanced_set_data(code)
                 all_data.append(data)
@@ -275,14 +279,19 @@ def create_lego_database(lego_codes: List[str], headless: bool = True) -> pd.Dat
                 scraper.driver.get("https://www.brickeconomy.com/")
                 time.sleep(0.1)
     
-    # Create DataFrame
-    df = pd.DataFrame(all_data)
-    
-    # Add some computed fields
-    df['has_image'] = df['image_path'].apply(lambda x: x not in ['Not found', 'Error', None])
-    df['pieces_numeric'] = df['number_of_pieces'].apply(lambda x: 
-        int(''.join(filter(str.isdigit, str(x)))) if x and str(x).replace(',', '').isdigit() else None
-    )
+    # Se non ci sono nuovi dati, carica dal database
+    if not all_data:
+        print("ℹ️ Tutti i codici sono già presenti nel database. Carico i dati da SQLite.")
+        conn = sqlite3.connect("lego_database/LegoDatabase.db")
+        df = pd.read_sql_query("SELECT * FROM lego_sets", conn)
+        conn.close()
+    else:
+        df = pd.DataFrame(all_data)
+        # Add some computed fields
+        df['has_image'] = df['image_path'].apply(lambda x: x not in ['Not found', 'Error', None])
+        df['pieces_numeric'] = df['number_of_pieces'].apply(lambda x: 
+            int(''.join(filter(str.isdigit, str(x)))) if x and str(x).replace(',', '').isdigit() else None
+        )
     
     elapsed = time.time() - start_time
     success_count = len(df[df['official_name'].notna() & (df['official_name'] != 'Not found') & (df['official_name'] != 'Error')])
@@ -458,6 +467,19 @@ def create_html_report(df: pd.DataFrame, filename: str):
     
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(html_content)
+
+def get_existing_lego_codes(sqlite_file="lego_database/LegoDatabase.db"):
+    """Restituisce l'elenco dei lego_code già presenti nel database"""
+    if not os.path.exists(sqlite_file):
+        return set()
+    conn = sqlite3.connect(sqlite_file)
+    try:
+        df = pd.read_sql_query("SELECT lego_code FROM lego_sets", conn)
+        return set(df['lego_code'].tolist())
+    except Exception:
+        return set()
+    finally:
+        conn.close() 
 
 def main():
     """Main function to create LEGO database"""

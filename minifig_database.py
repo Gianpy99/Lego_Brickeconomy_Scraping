@@ -291,8 +291,12 @@ def debug_dataframe(df):
 def create_minifig_database(minifig_codes, headless=True):
     scraper = EnhancedMinifigScraper(headless=headless)
     all_data = []
-    
+    # Carica i codici già presenti
+    existing_codes = get_existing_minifig_codes()
     for i, code in enumerate(minifig_codes, 1):
+        if code in existing_codes:
+            print(f"⏩ {code} già presente nel database, salto scraping.")
+            continue
         print(f"\n🔎 {i}/{len(minifig_codes)}: Processing {code}")
         data = scraper.extract_minifig_data(code)
         all_data.append(data)
@@ -302,7 +306,13 @@ def create_minifig_database(minifig_codes, headless=True):
             time.sleep(2)
     
     scraper.close()
-    df = pd.DataFrame(all_data)
+    if not all_data:
+        print("ℹ️ Tutti i codici sono già presenti nel database. Carico i dati da SQLite.")
+        conn = sqlite3.connect("lego_database/LegoDatabase.db")
+        df = pd.read_sql_query("SELECT * FROM minifig", conn)
+        conn.close()
+    else:
+        df = pd.DataFrame(all_data)
     return df
 
 def export_minifig_database(df, format='all'):
@@ -351,7 +361,7 @@ def export_minifig_database(df, format='all'):
         print(f"📦 SQLite database: {sqlite_file}")
 
     if format in ['html', 'all']:
-        html_file = f"{base_filename}.html"
+        html_file = f"{base_filename}_Minifig.html"
         df = pd.read_sql_query("SELECT * FROM minifig", conn)
         create_minifig_html_report(df, html_file)
         print(f"🌐 HTML rigenerato da SQLite: {html_file}")
@@ -434,6 +444,13 @@ def create_minifig_html_report(df: pd.DataFrame, filename: str):
     """
     
     for _, row in df.iterrows():
+        sets = row['sets']
+        if isinstance(sets, str):
+            sets_list = [s.strip() for s in sets.split(',') if s.strip()]
+        elif isinstance(sets, list):
+            sets_list = sets
+        else:
+            sets_list = []
         is_found = row['official_name'] not in ['Not found', 'Error', ''] and pd.notna(row['official_name'])
         is_error = row['official_name'] == 'Error'
         
@@ -516,7 +533,7 @@ def create_minifig_html_report(df: pd.DataFrame, filename: str):
                     <div class="minifig-details">📅 Released: {row['released'] if pd.notna(row['released']) and row['released'] else 'N/A'}</div>
                     <div class="minifig-details">
                         <b>📦 Sets:</b>
-                        {('<ul style="margin:4px 0 0 18px;">' + ''.join(f'<li>{s}</li>' for s in row['sets']) + '</ul>') if isinstance(row['sets'], list) and row['sets'] else 'N/A'}
+                        {('<ul style="margin:4px 0 0 18px;">' + ''.join(f'<li>{s}</li>' for s in sets_list) + '</ul>') if sets_list else 'N/A'}
                     </div>
                 </div>
             </div>
@@ -530,6 +547,19 @@ def create_minifig_html_report(df: pd.DataFrame, filename: str):
     
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(html_content)
+
+def get_existing_minifig_codes(sqlite_file="lego_database/LegoDatabase.db"):
+    """Restituisce l'elenco dei minifig_code già presenti nel database"""
+    if not os.path.exists(sqlite_file):
+        return set()
+    conn = sqlite3.connect(sqlite_file)
+    try:
+        df = pd.read_sql_query("SELECT minifig_code FROM minifig", conn)
+        return set(df['minifig_code'].tolist())
+    except Exception:
+        return set()
+    finally:
+        conn.close()
 
 def main():
     import sys

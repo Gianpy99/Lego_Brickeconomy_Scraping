@@ -130,6 +130,7 @@ class BrickEconomyScraper:
             element = WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located((by, value))
             )
+            logger.info(f"Element found: {value}")
             return element
         except TimeoutException:
             return None
@@ -534,7 +535,7 @@ class BrickEconomyScraper:
             except Exception as e:
                 raise ElementNotFoundError(f"Could not execute search: {str(e)}")
             
-            time.sleep(2)  # Wait for results
+            time.sleep(1)  # Wait for results
             
             # Quick popup cleanup after search
             self.driver.execute_script("""
@@ -548,10 +549,13 @@ class BrickEconomyScraper:
                 "//a[@href='#sets']",
                 "//a[contains(text(), 'Sets')]"
             ]
-            
+            logger.info(f"Sets tab selectors: {sets_tab_selectors}")
             for selector in sets_tab_selectors:
+                logger.info(f"Trying to click Sets tab with selector: {selector}")
                 try:
+                    logger.info(f"Trying to click Sets tab with selector 2: {selector}")
                     sets_tab = self.wait_and_find_element(By.XPATH, selector, timeout=2)
+                    logger.info(f"Sets tab found 1: {sets_tab}")
                     if sets_tab and sets_tab.is_displayed():
                         # Use JavaScript for reliable clicking
                         self.driver.execute_script("arguments[0].click();", sets_tab)
@@ -570,28 +574,46 @@ class BrickEconomyScraper:
     
     def find_matching_set(self, lego_code: str) -> Optional[Any]:
         """Find the matching LEGO set from search results"""
+        logger.info(f"🔍 Searching for LEGO set with code 0: {lego_code}")
         try:
+            logger.info(f"🔍 Searching for LEGO set with code: {lego_code}")
             # Get all search result rows
             search_results = self.driver.find_elements(
                 By.XPATH, 
                 '//*[@id="ContentPlaceHolder1_ctlSets_GridViewSets"]/tbody/tr'
             )
-            
+            logger.info(f"🔍 Checking result {i}: Code '{code}'")
             # Skip header row and iterate through results
             for i in range(1, len(search_results), 2):
                 try:
                     result_row = search_results[i]
-                    
-                    # Check theme
-                    theme_elements = result_row.find_elements(By.XPATH, './td[2]/div[2]/a[1]')
-                    if not theme_elements:
+                    # Estrai il codice del set dalla riga
+                    code_elements = result_row.find_elements(By.XPATH, './td[2]/div[1]/h4/a')
+                    logger.info(f"🔍 Checking result {i}: Code '{code_elements}'")
+                    if not code_elements:
                         continue
+                    code = code_elements[0].text.strip().replace('.', '')
+                    logger.info(f"🔍 Checking result {i}: Code '{code}'")
+                    if code != lego_code:
+                        continue  # Salta se non è il codice esatto
+
+                    # --- RIMUOVI IL FILTRO SUL TEMA ---
+                    # theme_elements = result_row.find_elements(By.XPATH, './td[2]/div[2]/a[1]')
+                    # if not theme_elements:
+                    #     continue
+                    # theme = theme_elements[0].text
+                    # if theme not in self.config.TARGET_THEMES:
+                    #     logger.debug(f"Skipping theme: {theme}")
+                    #     continue
+                    # ----------------------------------
                     
-                    theme = theme_elements[0].text
-                    if theme not in self.config.TARGET_THEMES:
-                        logger.debug(f"Skipping theme: {theme}")
-                        continue
-                    
+                    # Trova il link del set
+                    set_link = code_elements[0]
+                    logger.info(f"Found matching set with code: {code}")
+                    set_link.click()
+                    time.sleep(2)
+                    return set_link
+
                     # Find the set link
                     set_link_xpath = f'//*[@id="ContentPlaceHolder1_ctlSets_GridViewSets"]/tbody/tr[{i+1}]/td[2]/div[1]/h4/a'
                     set_link = self.driver.find_element(By.XPATH, set_link_xpath)
@@ -700,7 +722,7 @@ class BrickEconomyScraper:
                 if not self.search_lego_set(lego_code):
                     results[lego_code] = LegoSetDetails(lego_code=lego_code)
                     continue
-                
+                logger.info(f"Searching for LEGO set: {lego_code}")
                 # Find and click on the matching set
                 if not self.find_matching_set(lego_code):
                     results[lego_code] = LegoSetDetails(lego_code=lego_code)

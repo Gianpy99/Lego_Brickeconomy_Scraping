@@ -469,32 +469,50 @@ def create_html_report(df: pd.DataFrame, filename: str):
 def main():
     """Main function to create LEGO database"""
     import sys
-    
+
     print("🏗️ LEGO DATABASE CREATOR")
     print("Creates comprehensive database with images")
     print("=" * 50)
-    
-    # Get LEGO codes
+
+    # Lista principale di codici (senza punti)
+    default_codes = [
+        "3920","9469","9470","9471","9472","9473","9474","9476",
+        "10237","10316","10333", "30210","30211","30212","30213",
+        "30215","30216","40630","40631","40632","40693","40751",
+        "50011","71171","71218","71219","71220","79000","79001",
+        "79002","79003","79004","79005","79006","79007","79008",
+        "79010","79011","79012","79013","79014","79015","79016",
+        "79017","79018","5000202","850674","850680","850514",
+        "850515","850516","10367"
+    ]
+
+    # Codici aggiuntivi ad-hoc (puoi aggiungere qui in futuro)
+    extra_codes = [
+        # "99999", "12345"  # esempio, aggiungi qui altri codici
+    ]
+
+    # Input da terminale o usa default + extra
     if len(sys.argv) > 1:
-        codes = [c.strip() for c in sys.argv[1].split(',')]
+        codes = [c.strip().replace('.', '') for c in sys.argv[1].split(',')]
     else:
-        codes_input = input("Enter LEGO codes (comma-separated) [3920,9469,10333]: ").strip()
+        codes_input = input("Enter LEGO codes (comma-separated) [default list]: ").strip()
         if not codes_input:
-            codes = ["3920", "9469", "10333"]
+            codes = default_codes + extra_codes
+            print(f"Using default codes: {', '.join(codes)}")
         else:
-            codes = [c.strip() for c in codes_input.split(',')]
-    
+            codes = [c.strip().replace('.', '') for c in codes_input.split(',')] + extra_codes
+
     # Create database
     df = create_lego_database(codes, headless=True)
-    
+
     # Export in all formats
     output_files = export_database(df, format='all')
-    
+
     print(f"\n🎉 DATABASE COMPLETE!")
     print(f"📁 Files created: {len(output_files)}")
     for file in output_files:
         print(f"   📄 {file}")
-    
+
     print(f"\n💡 Open the HTML file to view your LEGO database with images!")
 
 if __name__ == "__main__":

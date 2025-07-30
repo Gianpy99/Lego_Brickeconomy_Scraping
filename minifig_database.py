@@ -131,7 +131,7 @@ class EnhancedMinifigScraper:
                     # Remove common suffixes
                     name = re.sub(r'\s*\|\s*BrickEconomy.*', '', name)
                     name = re.sub(r'\s*Minifigure\s*', '', name)
-                    name = re.sub(r'\s*LEGO\s*', '', name, flags=re.IGNORECASE)
+                    #name = re.sub(r'\s*LEGO\s*', '', name, flags=re.IGNORECASE)
                     name = name.strip()
                     data['official_name'] = name
                 else:
@@ -241,13 +241,17 @@ class EnhancedMinifigScraper:
                 sets = []
                 self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "table.ctlsets-table")))
                 tables = self.driver.find_elements(By.CSS_SELECTOR, "table.ctlsets-table")
+                print(f"   📋 Found {len(tables)} tables")
                 for table in tables:
-                    # Prendi solo il testo dei set dai tag h4 > a
-                    set_links = table.find_elements(By.CSS_SELECTOR, "h4 > a[href^='/set/']")
-                    for link in set_links:
-                        set_text = link.text.strip()
-                        if set_text:
-                            sets.append(set_text)
+                    h4_tags = table.find_elements(By.CSS_SELECTOR, "h4")
+                    print(f"   📋 Found {len(h4_tags)} h4 tags in table")
+                    for h4 in h4_tags:
+                        links = h4.find_elements(By.CSS_SELECTOR, "a[href^='/set/']")
+                        for link in links:
+                            set_title = link.get_attribute("innerText").strip()
+                            print(f"   📋 set title: '{set_title}'")
+                            if set_title:
+                                sets.append(set_title)
                 data['sets'] = sets
                 print(f"   📦 Sets found: {sets}")
             except Exception as e:
@@ -476,9 +480,13 @@ def create_minifig_html_report(df: pd.DataFrame, filename: str):
                         <span class="minifig-code">{row['minifig_code']}</span>
                         {name}
                     </div>
-                    <div class="minifig-details">{theme}</div>
                     <div class="minifig-details">{year}</div>
                     <div class="minifig-details">{price}</div>
+                    <div class="minifig-details">📅 Released: {row['released'] if pd.notna(row['released']) and row['released'] else 'N/A'}</div>
+                    <div class="minifig-details">
+                        <b>📦 Sets:</b>
+                        {('<ul style="margin:4px 0 0 18px;">' + ''.join(f'<li>{s}</li>' for s in row['sets']) + '</ul>') if isinstance(row['sets'], list) and row['sets'] else 'N/A'}
+                    </div>
                 </div>
             </div>
         """
@@ -498,15 +506,21 @@ def main():
     print("Creates comprehensive minifig database with images")
     print("=" * 50)
 
-    # Get minifig codes
+    # Codici ad-hoc (aggiungi qui quelli che vuoi in futuro)
+    extra_codes = [
+        "dim001", "dim007", "dim008"
+        # aggiungi altri codici qui
+    ]
+
+    # Range automatico lor001-lor153
+    auto_codes = [f"lor{str(i).zfill(3)}" for i in range(1, 154)]
+
+    # Se passi codici da terminale, usali; altrimenti usa auto + extra
     if len(sys.argv) > 1:
         codes = [c.strip() for c in sys.argv[1].split(',')]
     else:
-        codes_input = input("Enter minifig codes (comma-separated) [lor001,lor002,lor003]: ").strip()
-        if not codes_input:
-            codes = ["lor001", "lor002", "lor003"]
-        else:
-            codes = [c.strip() for c in codes_input.split(',')]
+        codes = auto_codes + extra_codes
+        print(f"Using codes: {', '.join(codes)}")
 
     print(f"\n🏗️ CREATING MINIFIG DATABASE")
     print(f"🧑‍🚀 Processing {len(codes)} minifigs with enhanced scraping")

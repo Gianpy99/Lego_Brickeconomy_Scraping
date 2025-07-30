@@ -13,10 +13,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import re
+import sqlite3
 
 class MinifigImageDatabase:
     def __init__(self):
-        self.images_dir = "minifig_database/images"
+        self.images_dir = "lego_database/images"
         os.makedirs(self.images_dir, exist_ok=True)
 
     def download_image(self, minifig_code, image_url):
@@ -306,29 +307,61 @@ def create_minifig_database(minifig_codes, headless=True):
     return df
 
 def export_minifig_database(df, format='all'):
-    os.makedirs('minifig_database', exist_ok=True)
-    timestamp = int(time.time())
-    base_filename = f"minifig_database/minifig_database_{timestamp}"
+
+    """Export database in multiple formats, always overwriting MinifigDatabase files"""
+    base_filename = f"lego_database/LegoDatabase"
     output_files = []
-    
-    if format in ['excel', 'all']:
-        excel_file = f"{base_filename}.xlsx"
-        df.to_excel(excel_file, index=False)
-        output_files.append(excel_file)
-        print(f"   📊 Excel: {excel_file}")
-    
-    if format in ['csv', 'all']:
-        csv_file = f"{base_filename}.csv"
-        df.to_csv(csv_file, index=False)
-        output_files.append(csv_file)
-        print(f"   📄 CSV: {csv_file}")
-    
+
+    if format in ['sqlite3', 'all']:
+        sqlite_file = f"{base_filename}.db"
+        conn = sqlite3.connect(sqlite_file)
+        cursor = conn.cursor()
+        # Crea la tabella se non esiste
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS minifig (
+                minifig_code TEXT PRIMARY KEY,
+                official_name TEXT,
+                year TEXT,
+                released TEXT,
+                retail_price_gbp TEXT,
+                has_image INTEGER,
+                image_path TEXT,
+                sets TEXT
+            )
+        """)
+        # Inserisci solo i nuovi minifig (evita duplicati)
+        for _, row in df.iterrows():
+            cursor.execute("""
+                INSERT OR REPLACE INTO minifig (
+                    minifig_code, official_name, year, released,
+                    retail_price_gbp, has_image, image_path, sets
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                row['minifig_code'],
+                row['official_name'],
+                row['year'],
+                row['released'],
+                row['retail_price_gbp'],
+                int(row['has_image']),
+                row['image_path'],
+                ', '.join(row['sets']) if isinstance(row['sets'], list) else row['sets']
+            ))
+        conn.commit()
+        
+        output_files.append(sqlite_file)
+        print(f"📦 SQLite database: {sqlite_file}")
+
     if format in ['html', 'all']:
         html_file = f"{base_filename}.html"
+        df = pd.read_sql_query("SELECT * FROM minifig", conn)
+        create_minifig_html_report(df, html_file)
+        print(f"🌐 HTML rigenerato da SQLite: {html_file}")
         create_minifig_html_report(df, html_file)
         output_files.append(html_file)
-        print(f"   🌐 HTML: {html_file}")
-    
+        print(f"🌐 HTML report: {html_file}")
+
+    conn.close()
+
     return output_files
 
 def create_minifig_html_report(df: pd.DataFrame, filename: str):
@@ -468,7 +501,6 @@ def create_minifig_html_report(df: pd.DataFrame, filename: str):
         else:
             name = row['official_name']
         
-        theme = f"🎨 {row['theme']}" if pd.notna(row['theme']) and row['theme'] else ""
         year = f"📅 {row['year']}" if pd.notna(row['year']) and row['year'] else ""
         price = f"💰 £{row['retail_price_gbp']}" if pd.notna(row['retail_price_gbp']) and row['retail_price_gbp'] else ""
         
@@ -513,7 +545,7 @@ def main():
     ]
 
     # Range automatico lor001-lor153
-    auto_codes = [f"lor{str(i).zfill(3)}" for i in range(1, 154)]
+    auto_codes = [f"lor{str(i).zfill(3)}" for i in range(1, 154) if i != 108] # Skip lor108 as it's not a minifig
 
     # Se passi codici da terminale, usali; altrimenti usa auto + extra
     if len(sys.argv) > 1:

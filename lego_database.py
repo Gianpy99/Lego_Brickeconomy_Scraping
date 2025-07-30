@@ -13,15 +13,16 @@ from public_scraper import PublicLegoScraper, scrape_lego_codes_fast
 from config import Config
 from models import LegoSetDetails
 import pandas as pd
+import sqlite3
 from PIL import Image
-import io
+
 
 class LegoImageDatabase:
     """Enhanced LEGO scraper that also downloads set images"""
     
     def __init__(self, config: Config):
         self.config = config
-        self.images_dir = "lego_images"
+        self.images_dir = os.path.join("lego_database", "images")  # <-- usa solo questa cartella
         self.database_dir = "lego_database"
         self._setup_directories()
     
@@ -36,43 +37,35 @@ class LegoImageDatabase:
             if not image_url or image_url == "Not found":
                 return None
             
-            # Create filename
             filename = f"{lego_code}.jpg"
             filepath = os.path.join(self.images_dir, filename)
             
-            # Skip if already exists
             if os.path.exists(filepath):
                 return filepath
             
-            # Download image
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
             }
-            
             response = requests.get(image_url, headers=headers, timeout=10)
             response.raise_for_status()
             
-            # Save image
             with open(filepath, 'wb') as f:
                 f.write(response.content)
             
-            # Verify and resize image
+            # Verifica e ridimensiona SOLO se troppo grande
             try:
                 with Image.open(filepath) as img:
-                    # Resize to thumbnail if too large
-                    if img.width > 400 or img.height > 400:
-                        img.thumbnail((400, 400), Image.Resampling.LANCZOS)
-                        img.save(filepath, "JPEG", quality=85)
-                
+                    # Ridimensiona solo se > 1200px
+                    if img.width > 1200 or img.height > 1200:
+                        img.thumbnail((1200, 1200), Image.Resampling.LANCZOS)
+                        img.save(filepath, "JPEG", quality=95)
                 print(f"    🖼️ Image saved: {filename}")
                 return filepath
-                
             except Exception as img_error:
                 print(f"    ⚠️ Image processing error: {img_error}")
                 if os.path.exists(filepath):
                     os.remove(filepath)
                 return None
-                
         except Exception as e:
             print(f"    ❌ Failed to download image: {str(e)}")
             return None
@@ -131,41 +124,43 @@ class EnhancedLegoScraper(PublicLegoScraper):
         return data
     
     def _extract_image_url(self) -> Optional[str]:
-        """Extract thumbnail image URL from BrickEconomy - optimized for thumbnails"""
-        
-        # Aspetta che la pagina si carichi
-        time.sleep(1)
-        
-        # Selettori ottimizzati per thumbnail di BrickEconomy
+        """Extract high-quality image URL from BrickEconomy, fallback to thumbnail"""
+        time.sleep(0.1)
+        # Prima cerca immagini grandi
         image_selectors = [
-            # Thumbnail specifici - più probabili e veloci
-            "//img[contains(@src, 'thumbnail') or contains(@src, 'thumb')][@src]",
+            "//img[contains(@src, '/resources/images/sets/') and not(contains(@src, 'thumb')) and not(contains(@src, 'thumbnail'))]",
             "//img[contains(@src, '.jpg') and string-length(@src) > 30 and string-length(@src) < 200]",
-            # Immagini nell'area principale del contenuto
-            "//*[@id='ContentPlaceHolder1']//img[@src]",
-            # Immagini con dimensioni ragionevoli per thumbnail
-            "//img[@width and @height and @src]",
-            # Pattern generici ma sicuri
+            "//img[contains(@src, '/sets/') and contains(@src, '.jpg')]",
+            "//img[@src and (contains(@src, 'lego-') or contains(@src, 'set-')) and not(contains(@src, 'thumb'))]",
+        ]
+        # Se non trova nulla, cerca thumbnail
+        fallback_selectors = [
+            "//img[contains(@src, 'thumbnail') or contains(@src, 'thumb')][@src]",
             "//img[contains(@src, '.jpg') and contains(@src, 'http')][@src]",
         ]
-        
+        # Prova prima con immagini grandi
         for i, selector in enumerate(image_selectors, 1):
             try:
                 elements = self.driver.find_elements(By.XPATH, selector)
-                
-                for element in elements[:5]:  # Controlla solo i primi 5 per velocità
-                    try:
-                        src = element.get_attribute('src')
-                        if src and self._is_valid_thumbnail_url(src):
-                            print(f"      �️ Thumbnail found (selector {i}): {src[:60]}...")
-                            return src
-                    except:
-                        continue
-                        
-            except Exception as e:
+                for element in elements[:3]:
+                    src = element.get_attribute('src')
+                    if src and self._is_valid_thumbnail_url(src):
+                        print(f"      🖼️ High-quality image found (selector {i}): {src[:60]}...")
+                        return src
+            except:
                 continue
-        
-        print(f"      ❌ No valid thumbnail found")
+        # Fallback ai thumbnail
+        for i, selector in enumerate(fallback_selectors, 1):
+            try:
+                elements = self.driver.find_elements(By.XPATH, selector)
+                for element in elements[:3]:
+                    src = element.get_attribute('src')
+                    if src and self._is_valid_thumbnail_url(src):
+                        print(f"      🖼️ Thumbnail found (selector {i}): {src[:60]}...")
+                        return src
+            except:
+                continue
+        print(f"      ❌ No valid image found")
         return None
     
     def _is_valid_thumbnail_url(self, url: str) -> bool:
@@ -280,7 +275,7 @@ def create_lego_database(lego_codes: List[str], headless: bool = True) -> pd.Dat
             # Small delay between requests
             if i < len(lego_codes):
                 scraper.driver.get("https://www.brickeconomy.com/")
-                time.sleep(0.5)
+                time.sleep(0.1)
     
     # Create DataFrame
     df = pd.DataFrame(all_data)
@@ -303,61 +298,68 @@ def create_lego_database(lego_codes: List[str], headless: bool = True) -> pd.Dat
     return df
 
 def export_database(df: pd.DataFrame, format: str = 'all') -> List[str]:
-    """Export database in multiple formats"""
-    
-    timestamp = int(time.time())
-    base_filename = f"lego_database_{timestamp}"
+    """Export database in multiple formats, always overwriting LegoDatabase files"""
+    base_filename = f"lego_database/LegoDatabase"
     output_files = []
-    
-    if format in ['excel', 'all']:
-        # Excel with multiple sheets
-        excel_file = f"lego_database/{base_filename}.xlsx"
-        
-        with pd.ExcelWriter(excel_file, engine='openpyxl') as writer:
-            # Main data
-            df.to_excel(writer, sheet_name='LEGO_Sets', index=False)
-            
-            # Summary by theme
-            if 'theme' in df.columns:
-                theme_summary = df.groupby('theme').agg({
-                    'lego_code': 'count',
-                    'pieces_numeric': 'mean',
-                    'has_image': 'sum'
-                }).round(1)
-                theme_summary.columns = ['Sets_Count', 'Avg_Pieces', 'Images_Count']
-                theme_summary.to_excel(writer, sheet_name='Themes_Summary')
-            
-            # Sets with images
-            sets_with_images = df[df['has_image'] == True]
-            if not sets_with_images.empty:
-                sets_with_images.to_excel(writer, sheet_name='Sets_With_Images', index=False)
-        
-        output_files.append(excel_file)
-        print(f"📊 Excel database: {excel_file}")
-    
-    if format in ['csv', 'all']:
-        csv_file = f"lego_database/{base_filename}.csv"
-        df.to_csv(csv_file, index=False)
-        output_files.append(csv_file)
-        print(f"📊 CSV database: {csv_file}")
+
+    if format in ['sqlite3', 'all']:
+        sqlite_file = f"{base_filename}.db"
+        conn = sqlite3.connect(sqlite_file)
+        cursor = conn.cursor()
+        # Crea la tabella se non esiste
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS lego_sets (
+                lego_code TEXT PRIMARY KEY,
+                official_name TEXT,
+                number_of_pieces TEXT,
+                number_of_minifigs TEXT,
+                released TEXT,
+                retired TEXT,
+                retail_price_eur TEXT,
+                retail_price_gbp TEXT,
+                value_new_sealed TEXT,
+                value_used TEXT,
+                image_url TEXT,
+                image_path TEXT,
+                theme TEXT,
+                subtheme TEXT,
+                has_image INTEGER,
+                pieces_numeric INTEGER
+            )
+        """)
+        # Inserisci solo i nuovi set (evita duplicati)
+        for _, row in df.iterrows():
+            cursor.execute("""
+                INSERT OR REPLACE INTO lego_sets (
+                    lego_code, official_name, number_of_pieces, number_of_minifigs, released, retired,
+                    retail_price_eur, retail_price_gbp, value_new_sealed, value_used, image_url, image_path,
+                    theme, subtheme, has_image, pieces_numeric
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                row['lego_code'], row['official_name'], row['number_of_pieces'], row['number_of_minifigs'],
+                row['released'], row['retired'], row['retail_price_eur'], row['retail_price_gbp'],
+                row['value_new_sealed'], row['value_used'], row['image_url'], row['image_path'],
+                row['theme'], row['subtheme'], int(row['has_image']), row['pieces_numeric']
+            ))
+        conn.commit()
+        output_files.append(sqlite_file)
+        print(f"📦 SQLite database: {sqlite_file}")
     
     if format in ['html', 'all']:
-        # Create HTML report with images
-        html_file = f"lego_database/{base_filename}.html"
+        html_file = f"{base_filename}.html"
+        df = pd.read_sql_query("SELECT * FROM lego_sets", conn)
         create_html_report(df, html_file)
+        print(f"🌐 HTML rigenerato da SQLite: {html_file}")
         output_files.append(html_file)
         print(f"🌐 HTML report: {html_file}")
+    
+    conn.close()
+
     
     return output_files
 
 def create_html_report(df: pd.DataFrame, filename: str):
     """Create HTML report with images"""
-    import shutil
-    
-    # Crea cartella images nella stessa directory dell'HTML
-    html_dir = os.path.dirname(filename)
-    images_dir = os.path.join(html_dir, 'images')
-    os.makedirs(images_dir, exist_ok=True)
     
     html_content = """
     <!DOCTYPE html>
@@ -424,15 +426,8 @@ def create_html_report(df: pd.DataFrame, filename: str):
         if row['has_image'] and os.path.exists(row['image_path']):
             # Copia l'immagine nella cartella images
             image_filename = f"{row['lego_code']}.jpg"
-            dest_path = os.path.join(images_dir, image_filename)
-            try:
-                shutil.copy2(row['image_path'], dest_path)
-                # Usa percorso relativo per HTML
-                image_src = f"images/{image_filename}"
-                image_tag = f'<img src="{image_src}" class="set-image" alt="LEGO {row["lego_code"]}">'
-            except Exception as e:
-                print(f"⚠️ Errore copia immagine {row['lego_code']}: {e}")
-                image_tag = '<div class="set-image" style="display:flex;align-items:center;justify-content:center;color:#999;">Image Error</div>'
+            image_src = f"images/{image_filename}"
+            image_tag = f'<img src="{image_src}" class="set-image" alt="LEGO {row["lego_code"]}">'
         else:
             image_tag = '<div class="set-image" style="display:flex;align-items:center;justify-content:center;color:#999;">No Image</div>'
         

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Sets Full</title>
+    <style>
+        .sets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .set-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .set-image {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background: #f8f9fa;
+        }
+        .set-info {
+            padding: 20px;
+        }
+        .set-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Sets Page</h1>
+    <div id="debug"></div>
+    <div id="setsGrid" class="sets-grid"></div>
+    
+    <script>
+        console.log("Script starting...");
+        
+        // Test se l'elemento esiste
+        const grid = document.getElementById('setsGrid');
+        console.log("Grid element:", grid);
+        
+        // Dati test
+        const setsData = [
+            {"code": "10237", "name": "10237 Tower of Orthanc", "pieces": "2359", "minifigs": "5", "released": "July 2013", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£169.99", "image_path": "images/10237.jpg", "has_image": true},
+            {"code": "10316", "name": "10316 The Lord of the Rings Rivendell", "pieces": "6167", "minifigs": "21", "released": "March 5, 2023", "theme": "Icons", "price_eur": null, "price_gbp": "£429.99", "image_path": "images/10316.jpg", "has_image": true}
+        ];
+        
+        console.log("SetsData:", setsData.length, "sets");
+        
+        function renderSets() {
+            console.log("renderSets called");
+            const grid = document.getElementById('setsGrid');
+            console.log("Grid in render:", grid);
+            
+            if (!grid) {
+                console.error("Grid element not found!");
+                return;
+            }
+            
+            if (setsData.length === 0) {
+                console.log("No data, showing no results");
+                grid.innerHTML = '<h3>No sets found</h3>';
+            } else {
+                console.log("Rendering", setsData.length, "sets");
+                grid.innerHTML = setsData.map(set => `
+                    <div class="set-card">
+                        <img src="${set.image_path}" alt="LEGO ${set.code}" class="set-image" loading="lazy">
+                        <div class="set-info">
+                            <div class="set-title">${set.code}: ${set.name}</div>
+                            <div>🧩 ${set.pieces} pieces</div>
+                            <div>👥 ${set.minifigs} minifigs</div>
+                            <div>📅 ${set.released}</div>
+                            <div>🏷️ ${set.theme}</div>
+                        </div>
+                    </div>
+                `).join('');
+                console.log("HTML rendered:", grid.innerHTML.length, "characters");
+            }
+        }
+        
+        // Testa immediato
+        console.log("Testing immediate render...");
+        renderSets();
+        
+        // Testa con DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOMContentLoaded fired");
+            renderSets();
+        });
+        
+        // Info debug
+        document.getElementById('debug').innerHTML = `
+            <h2>Debug Info:</h2>
+            <p>Sets count: ${setsData.length}</p>
+            <p>First set: ${setsData[0].name}</p>
+            <button onclick="renderSets()">Render Again</button>
+        `;
+    </script>
+</body>
+</html>

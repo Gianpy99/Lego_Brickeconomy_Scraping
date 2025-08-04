@@ -184,28 +184,19 @@ class DatabaseManager:
         """Create optimized indexes for better query performance"""
         indexes = [
             # Lego sets indexes
+            "CREATE INDEX IF NOT EXISTS idx_sets_lego_code ON lego_sets(lego_code)",
             "CREATE INDEX IF NOT EXISTS idx_sets_theme ON lego_sets(theme)",
-            "CREATE INDEX IF NOT EXISTS idx_sets_release_year ON lego_sets(release_year)",
             "CREATE INDEX IF NOT EXISTS idx_sets_has_image ON lego_sets(has_image)",
-            "CREATE INDEX IF NOT EXISTS idx_sets_pieces ON lego_sets(pieces_numeric)",
-            "CREATE INDEX IF NOT EXISTS idx_sets_price_eur ON lego_sets(price_eur_numeric)",
-            "CREATE INDEX IF NOT EXISTS idx_sets_updated ON lego_sets(updated_at)",
-            "CREATE INDEX IF NOT EXISTS idx_sets_validation ON lego_sets(validation_status)",
+            "CREATE INDEX IF NOT EXISTS idx_sets_released ON lego_sets(released)",
             
             # Minifig indexes
-            "CREATE INDEX IF NOT EXISTS idx_minifig_year ON minifig(year_numeric)",
-            "CREATE INDEX IF NOT EXISTS idx_minifig_theme ON minifig(theme)",
+            "CREATE INDEX IF NOT EXISTS idx_minifig_code ON minifig(minifig_code)",
             "CREATE INDEX IF NOT EXISTS idx_minifig_has_image ON minifig(has_image)",
-            "CREATE INDEX IF NOT EXISTS idx_minifig_price ON minifig(price_gbp_numeric)",
-            "CREATE INDEX IF NOT EXISTS idx_minifig_updated ON minifig(updated_at)",
+            "CREATE INDEX IF NOT EXISTS idx_minifig_year ON minifig(year)",
             
             # Relationship indexes
             "CREATE INDEX IF NOT EXISTS idx_relations_set ON set_minifig_relations(set_code)",
             "CREATE INDEX IF NOT EXISTS idx_relations_minifig ON set_minifig_relations(minifig_code)",
-            
-            # Composite indexes for common queries
-            "CREATE INDEX IF NOT EXISTS idx_sets_theme_year ON lego_sets(theme, release_year)",
-            "CREATE INDEX IF NOT EXISTS idx_sets_success_attempts ON lego_sets(scrape_success, scrape_attempts)"
         ]
         
         for index_sql in indexes:
@@ -462,10 +453,10 @@ class DatabaseManager:
                 set_stats = pd.read_sql_query("""
                     SELECT 
                         COUNT(*) as total,
-                        SUM(CASE WHEN scrape_success = 1 THEN 1 ELSE 0 END) as found,
+                        SUM(CASE WHEN official_name IS NOT NULL AND official_name NOT IN ('Not found', 'Error') THEN 1 ELSE 0 END) as found,
                         SUM(CASE WHEN has_image = 1 THEN 1 ELSE 0 END) as with_images,
                         COUNT(DISTINCT theme) as unique_themes,
-                        MAX(updated_at) as last_updated
+                        'Unknown' as last_updated
                     FROM lego_sets
                 """, conn).iloc[0]
                 
@@ -478,10 +469,10 @@ class DatabaseManager:
                 minifig_stats = pd.read_sql_query("""
                     SELECT 
                         COUNT(*) as total,
-                        SUM(CASE WHEN scrape_success = 1 THEN 1 ELSE 0 END) as found,
+                        SUM(CASE WHEN official_name IS NOT NULL AND official_name NOT IN ('Not found', 'Error') THEN 1 ELSE 0 END) as found,
                         SUM(CASE WHEN has_image = 1 THEN 1 ELSE 0 END) as with_images,
-                        COUNT(DISTINCT year_numeric) as unique_years,
-                        MAX(updated_at) as last_updated
+                        COUNT(DISTINCT year) as unique_years,
+                        'Unknown' as last_updated
                     FROM minifig
                 """, conn).iloc[0]
                 

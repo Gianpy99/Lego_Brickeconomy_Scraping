@@ -24,9 +24,15 @@ def generate_minifigs_page():
         # Generate minifigs data as JSON for JavaScript
         minifigs_data = []
         for _, row in minifigs_df.iterrows():
-            # Fix image path for web (convert backslashes to forward slashes)
+            # Fix image path for web (convert to relative path and forward slashes)
             image_path = row['image_path'] if pd.notna(row['image_path']) else ''
             if image_path:
+                # Convert to relative path for web (remove lego_database/ prefix)
+                if image_path.startswith('lego_database/'):
+                    image_path = image_path[len('lego_database/'):]
+                elif image_path.startswith('lego_database\\'):
+                    image_path = image_path[len('lego_database\\'):]
+                # Convert backslashes to forward slashes for web
                 image_path = image_path.replace('\\', '/')
                 
             minifigs_data.append({
@@ -178,7 +184,7 @@ def generate_minifigs_page():
         .minifig-image {{
             width: 100%;
             height: 200px;
-            object-fit: cover;
+            object-fit: contain;
             background: #f8f9fa;
         }}
         

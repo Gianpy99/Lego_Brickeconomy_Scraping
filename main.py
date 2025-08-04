@@ -11,6 +11,11 @@ import pandas as pd
 from datetime import datetime
 from typing import Dict, List, Optional
 import time
+import json
+import http.server
+import socketserver
+import threading
+from urllib.parse import urlparse, parse_qs
 
 # Import enhanced modules
 from database_manager import get_database_manager, DatabaseStats
@@ -18,12 +23,422 @@ from logging_system import setup_logging, get_logger
 from exceptions import DatabaseError, handle_exception
 
 # Import the existing modules
-from lego_database import main as lego_main, create_lego_database, export_database
+from lego_database import main as lego_main, create_lego_database, export_database, update_lego_database_silent
 from minifig_database import main as minifig_main, create_minifig_database, export_minifig_database
+
+# Import enhanced web generator
+from enhanced_web_generator import generate_enhanced_web_interface
 
 # Setup enhanced logging
 logger_system = setup_logging("LegoMainInterface")
 logger = get_logger(__name__)
+
+
+class LegoAPIHandler(http.server.SimpleHTTPRequestHandler):
+    """Custom HTTP handler for serving LEGO database API"""
+    
+    def __init__(self, *args, db_path="lego_database/LegoDatabase.db", **kwargs):
+        self.db_path = db_path
+        super().__init__(*args, **kwargs)
+    
+    def do_GET(self):
+        """Handle GET requests for API endpoints"""
+        parsed_path = urlparse(self.path)
+        query_params = parse_qs(parsed_path.query)
+        
+        if parsed_path.path == '/api/matrix-data':
+            self.serve_matrix_data()
+        elif parsed_path.path == '/api/search':
+            self.serve_search_results(query_params)
+        elif parsed_path.path == '/api/sets':
+            self.serve_sets_data(query_params)
+        elif parsed_path.path == '/api/minifigs':
+            self.serve_minifigs_data(query_params)
+        else:
+            # Serve static files
+            super().do_GET()
+    
+    def do_POST(self):
+        """Handle POST requests for API endpoints"""
+        parsed_path = urlparse(self.path)
+        
+        if parsed_path.path == '/api/sets/owned':
+            self.update_set_owned_status()
+        elif parsed_path.path == '/api/minifigs/owned':
+            self.update_minifig_owned_status()
+        else:
+            self.send_error(404, "Endpoint not found")
+    
+    def serve_matrix_data(self):
+        """Serve matrix data from SQLite database"""
+        try:
+            # Connect to database
+            conn = sqlite3.connect(self.db_path)
+            
+            # Get sets data
+            sets_query = """
+                SELECT lego_code as code, official_name as name, theme 
+                FROM lego_sets 
+                WHERE lego_code IS NOT NULL AND official_name IS NOT NULL
+                ORDER BY lego_code
+            """
+            sets_df = pd.read_sql_query(sets_query, conn)
+            sets = sets_df.to_dict('records')
+            
+            # Get minifigs data  
+            minifigs_query = """
+                SELECT minifig_code as code, official_name as name, sets
+                FROM minifig 
+                WHERE minifig_code IS NOT NULL AND official_name IS NOT NULL
+                ORDER BY minifig_code
+            """
+            minifigs_df = pd.read_sql_query(minifigs_query, conn)
+            minifigs = minifigs_df.to_dict('records')
+            
+            # Get connections data
+            connections_query = """
+                SELECT minifig_code, set_code
+                FROM set_minifig_relations
+                WHERE minifig_code IS NOT NULL AND set_code IS NOT NULL
+            """
+            connections_df = pd.read_sql_query(connections_query, conn)
+            connections = connections_df.to_dict('records')
+            
+            conn.close()
+            
+            # Create response data
+            matrix_data = {
+                "sets": sets,
+                "minifigs": minifigs,
+                "connections": connections
+            }
+            
+            # Send JSON response
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            
+            response_json = json.dumps(matrix_data, indent=2)
+            self.wfile.write(response_json.encode())
+            
+            logger.info(f"Served matrix data: {len(sets)} sets, {len(minifigs)} minifigs, {len(connections)} connections")
+            
+        except Exception as e:
+            logger.error(f"Error serving matrix data: {e}")
+            self.send_error(500, f"Internal server error: {e}")
+
+    def serve_search_results(self, query_params):
+        """Serve search results from SQLite database"""
+        try:
+            # Extract search parameters
+            search_term = query_params.get('q', [''])[0].lower()
+            category = query_params.get('category', [''])[0]
+            theme = query_params.get('theme', [''])[0]
+            
+            # Connect to database
+            conn = sqlite3.connect(self.db_path)
+            
+            results = {
+                'sets': [],
+                'minifigs': [],
+                'total_results': 0
+            }
+            
+            # Search in sets if category allows
+            if category in ['', 'sets']:
+                sets_query = """
+                    SELECT lego_code as code, official_name as name, theme, number_of_pieces as pieces, released as year_released, retail_price_eur as retail_price
+                    FROM lego_sets 
+                    WHERE lego_code IS NOT NULL AND official_name IS NOT NULL
+                """
+                params = []
+                
+                # Add search term filter
+                if search_term:
+                    sets_query += " AND (LOWER(official_name) LIKE ? OR LOWER(lego_code) LIKE ? OR LOWER(theme) LIKE ?)"
+                    search_pattern = f'%{search_term}%'
+                    params.extend([search_pattern, search_pattern, search_pattern])
+                
+                # Add theme filter
+                if theme:
+                    sets_query += " AND theme = ?"
+                    params.append(theme)
+                
+                sets_query += " ORDER BY lego_code LIMIT 50"
+                
+                sets_df = pd.read_sql_query(sets_query, conn, params=params)
+                results['sets'] = sets_df.to_dict('records')
+            
+            # Search in minifigs if category allows
+            if category in ['', 'minifigs']:
+                minifigs_query = """
+                    SELECT minifig_code as code, official_name as name, sets, year as year_released
+                    FROM minifig 
+                    WHERE minifig_code IS NOT NULL AND official_name IS NOT NULL
+                """
+                params = []
+                
+                # Add search term filter
+                if search_term:
+                    minifigs_query += " AND (LOWER(official_name) LIKE ? OR LOWER(minifig_code) LIKE ? OR LOWER(sets) LIKE ?)"
+                    search_pattern = f'%{search_term}%'
+                    params.extend([search_pattern, search_pattern, search_pattern])
+                
+                # Add theme filter (search in sets field)
+                if theme:
+                    minifigs_query += " AND LOWER(sets) LIKE ?"
+                    params.append(f'%{theme.lower()}%')
+                
+                minifigs_query += " ORDER BY minifig_code LIMIT 50"
+                
+                minifigs_df = pd.read_sql_query(minifigs_query, conn, params=params)
+                results['minifigs'] = minifigs_df.to_dict('records')
+            
+            conn.close()
+            
+            # Calculate total results
+            results['total_results'] = len(results['sets']) + len(results['minifigs'])
+            results['search_params'] = {
+                'search_term': search_term,
+                'category': category,
+                'theme': theme
+            }
+            
+            # Send JSON response
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            
+            response_json = json.dumps(results, indent=2)
+            self.wfile.write(response_json.encode())
+            
+            logger.info(f"Search completed: {results['total_results']} results for '{search_term}', category: '{category}', theme: '{theme}'")
+            
+        except Exception as e:
+            logger.error(f"Error serving search results: {e}")
+            self.send_error(500, f"Internal server error: {e}")
+
+    def serve_sets_data(self, query_params):
+        """Serve sets data with owned status"""
+        try:
+            # Connect to database
+            conn = sqlite3.connect(self.db_path)
+            
+            # Get sets data with owned status
+            sets_query = """
+                SELECT lego_code as code, official_name as name, theme, number_of_pieces as pieces, 
+                       released as year_released, retail_price_eur as retail_price, owned,
+                       image_path, has_image
+                FROM lego_sets 
+                WHERE lego_code IS NOT NULL AND official_name IS NOT NULL
+                ORDER BY lego_code
+            """
+            
+            sets_df = pd.read_sql_query(sets_query, conn)
+            
+            # Fix image paths - remove 'lego_database/' prefix since server is already in that directory
+            if 'image_path' in sets_df.columns:
+                sets_df['image_path'] = sets_df['image_path'].str.replace('lego_database/', '', regex=False)
+                sets_df['image_path'] = sets_df['image_path'].str.replace('lego_database\\', '', regex=False)
+            
+            sets = sets_df.to_dict('records')
+            
+            conn.close()
+            
+            # Send JSON response
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            
+            response_json = json.dumps(sets, indent=2)
+            self.wfile.write(response_json.encode())
+            
+            logger.info(f"Served sets data: {len(sets)} sets")
+            
+        except Exception as e:
+            logger.error(f"Error serving sets data: {e}")
+            self.send_error(500, f"Internal server error: {e}")
+
+    def update_set_owned_status(self):
+        """Update owned status for a specific set"""
+        try:
+            # Get POST data
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode('utf-8'))
+            
+            lego_code = data.get('lego_code')
+            owned = data.get('owned', 1)
+            
+            if not lego_code:
+                self.send_error(400, "Missing lego_code parameter")
+                return
+            
+            # Connect to database and update
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            cursor.execute(
+                "UPDATE lego_sets SET owned = ? WHERE lego_code = ?",
+                (owned, lego_code)
+            )
+            
+            if cursor.rowcount == 0:
+                conn.close()
+                self.send_error(404, f"Set {lego_code} not found")
+                return
+                
+            conn.commit()
+            conn.close()
+            
+            # Send success response
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+            self.end_headers()
+            
+            response = {
+                'success': True,
+                'lego_code': lego_code,
+                'owned': owned,
+                'message': f"Set {lego_code} owned status updated to {bool(owned)}"
+            }
+            
+            self.wfile.write(json.dumps(response).encode())
+            
+            logger.info(f"Updated set {lego_code} owned status to {bool(owned)}")
+            
+        except Exception as e:
+            logger.error(f"Error updating set owned status: {e}")
+            self.send_error(500, f"Internal server error: {e}")
+
+    def serve_minifigs_data(self, query_params):
+        """Serve minifigs data with owned status"""
+        try:
+            # Connect to database
+            conn = sqlite3.connect(self.db_path)
+            
+            # Get minifigs data with owned status
+            minifigs_query = """
+                SELECT minifig_code as code, official_name as name, sets, year as year_released, 
+                       retail_price_gbp as retail_price, owned, image_path, has_image
+                FROM minifig 
+                WHERE minifig_code IS NOT NULL AND official_name IS NOT NULL
+                ORDER BY minifig_code
+            """
+            
+            minifigs_df = pd.read_sql_query(minifigs_query, conn)
+            
+            # Fix image paths - remove 'lego_database/' prefix since server is already in that directory
+            if 'image_path' in minifigs_df.columns:
+                minifigs_df['image_path'] = minifigs_df['image_path'].str.replace('lego_database/', '', regex=False)
+                minifigs_df['image_path'] = minifigs_df['image_path'].str.replace('lego_database\\', '', regex=False)
+            
+            minifigs = minifigs_df.to_dict('records')
+            
+            conn.close()
+            
+            # Send JSON response
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            
+            response_json = json.dumps(minifigs, indent=2)
+            self.wfile.write(response_json.encode())
+            
+            logger.info(f"Served minifigs data: {len(minifigs)} minifigs")
+            
+        except Exception as e:
+            logger.error(f"Error serving minifigs data: {e}")
+            self.send_error(500, f"Internal server error: {e}")
+
+    def update_minifig_owned_status(self):
+        """Update owned status for a specific minifig"""
+        try:
+            # Get POST data
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode('utf-8'))
+            
+            minifig_code = data.get('minifig_code')
+            owned = data.get('owned', 1)
+            
+            if not minifig_code:
+                self.send_error(400, "Missing minifig_code parameter")
+                return
+            
+            # Connect to database and update
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            cursor.execute(
+                "UPDATE minifig SET owned = ? WHERE minifig_code = ?",
+                (owned, minifig_code)
+            )
+            
+            if cursor.rowcount == 0:
+                conn.close()
+                self.send_error(404, f"Minifig {minifig_code} not found")
+                return
+                
+            conn.commit()
+            conn.close()
+            
+            # Send success response
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+            self.end_headers()
+            
+            response = {
+                'success': True,
+                'minifig_code': minifig_code,
+                'owned': owned,
+                'message': f"Minifig {minifig_code} owned status updated to {bool(owned)}"
+            }
+            
+            self.wfile.write(json.dumps(response).encode())
+            
+            logger.info(f"Updated minifig {minifig_code} owned status to {bool(owned)}")
+            
+        except Exception as e:
+            logger.error(f"Error updating minifig owned status: {e}")
+            self.send_error(500, f"Internal server error: {e}")
+    
+    def do_OPTIONS(self):
+        """Handle OPTIONS requests for CORS"""
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+
+
+def start_api_server(port=8000, db_path="lego_database/LegoDatabase.db"):
+    """Start the API server in a separate thread"""
+    try:
+        # Change to the correct directory for serving static files
+        os.chdir('lego_database')
+        
+        # Create handler with database path
+        handler = lambda *args, **kwargs: LegoAPIHandler(*args, db_path=f"../{db_path}", **kwargs)
+        
+        with socketserver.TCPServer(("", port), handler) as httpd:
+            logger.info(f"API Server started at http://localhost:{port}")
+            logger.info(f"Matrix API available at http://localhost:{port}/api/matrix-data")
+            logger.info(f"Static files served from: {os.getcwd()}")
+            httpd.serve_forever()
+            
+    except Exception as e:
+        logger.error(f"Failed to start API server: {e}")
 
 
 class EnhancedLegoUnifiedDatabase:
@@ -148,7 +563,7 @@ class EnhancedLegoUnifiedDatabase:
 
 def view_detailed_analytics():
     """Display detailed analytics and breakdowns"""
-    db = EnhancedEnhancedLegoUnifiedDatabase()
+    db = EnhancedLegoUnifiedDatabase()
     
     try:
         # Use database manager for detailed analytics
@@ -248,7 +663,7 @@ def view_detailed_analytics():
 def create_unified_web_interface():
     """Create a comprehensive web interface for the LEGO database"""
     
-    db = EnhancedEnhancedLegoUnifiedDatabase()
+    db = EnhancedLegoUnifiedDatabase()
     stats = db.get_enhanced_stats()
     
     # Generate web interface HTML (keeping the existing implementation but with stats integration)
@@ -653,10 +1068,11 @@ def show_menu():
     print("2. 🧑‍🚀 Generate/Update Minifigures Database") 
     print("3. 🔄 Update Both Databases")
     print("4. 🌐 Create/Update Web Interface")
-    print("5. 📊 View Database Statistics")
-    print("6. 📈 View Detailed Analytics")
-    print("7. 🗄️ Database Management")
-    print("8. 📤 Export Data")
+    print("5. � Start API Server (for Matrix View)")
+    print("6. �📊 View Database Statistics")
+    print("7. 📈 View Detailed Analytics")
+    print("8. 🗄️ Database Management")
+    print("9. 📤 Export Data")
     print("0. ❌ Exit")
     print("="*60)
 
@@ -1277,13 +1693,15 @@ def main():
             print("\n📦 GENERATING/UPDATING LEGO SETS DATABASE")
             print("=" * 50)
             try:
-                lego_main()
+                update_lego_database_silent()  # Usa la versione silente
                 print("✅ LEGO sets database updated successfully!")
                 # Show updated stats
                 stats = db.get_enhanced_stats()
                 print(f"📊 Now have {stats['sets']['total']} sets ({stats['sets']['found']} found)")
             except Exception as e:
                 print(f"❌ Error updating LEGO sets: {e}")
+                import traceback
+                traceback.print_exc()
                 
         elif choice == "2":
             print("\n🧑‍🚀 GENERATING/UPDATING MINIFIGURES DATABASE")
@@ -1316,23 +1734,75 @@ def main():
             print("\n🌐 CREATING/UPDATING WEB INTERFACE")
             print("=" * 50)
             try:
-                main_page = create_unified_web_interface()
-                print(f"✅ Web interface created: {main_page}")
-                print(f"🌐 Open {main_page} in your browser!")
+                # Generate enhanced web interface (index.html + sets.html)
+                generate_enhanced_web_interface()
+                print("✅ Enhanced main page and sets page created")
+                
+                # Generate minifigs page by running the module
+                import subprocess
+                import os
+                env = os.environ.copy()
+                env['PYTHONIOENCODING'] = 'utf-8'
+                
+                result = subprocess.run([sys.executable, "generate_minifigs_page.py"], 
+                                     capture_output=True, text=True, cwd=".", env=env)
+                if result.returncode == 0:
+                    print("✅ Enhanced minifigs page created")
+                else:
+                    # Even if there's a Unicode error, the file is still created
+                    if "Enhanced minifigures page generated" in result.stderr:
+                        print("✅ Enhanced minifigs page created (Unicode display issue ignored)")
+                    else:
+                        print(f"⚠️ Minifigs page issue: {result.stderr}")
+                
+                # Generate analytics page by running the module
+                result = subprocess.run([sys.executable, "generate_analytics_page.py"], 
+                                     capture_output=True, text=True, cwd=".", env=env)
+                if result.returncode == 0:
+                    print("✅ Enhanced analytics page created")
+                else:
+                    # Even if there's a Unicode error, the file is still created
+                    if "Enhanced analytics page generated" in result.stderr:
+                        print("✅ Enhanced analytics page created (Unicode display issue ignored)")
+                    else:
+                        print(f"⚠️ Analytics page issue: {result.stderr}")
+                
+                print("\n🌐 Complete enhanced web interface created!")
+                print("🌐 Open lego_database/index.html in your browser!")
             except Exception as e:
-                print(f"❌ Error creating web interface: {e}")
+                print(f"❌ Error creating enhanced web interface: {e}")
+                import traceback
+                traceback.print_exc()
                 
         elif choice == "5":
+            print("\n🚀 STARTING API SERVER FOR MATRIX VIEW")
+            print("=" * 50)
+            try:
+                print("🌐 Starting local API server...")
+                print("📋 This will serve the matrix data directly from SQLite database")
+                print("🔗 Matrix view will be available at: http://localhost:8000/matrix.html")
+                print("🔗 API endpoint will be available at: http://localhost:8000/api/matrix-data")
+                print("\n⚠️  Press Ctrl+C to stop the server")
+                
+                # Start the API server (this will block)
+                start_api_server(port=8000, db_path="lego_database/LegoDatabase.db")
+                
+            except KeyboardInterrupt:
+                print("\n🛑 Server stopped by user")
+            except Exception as e:
+                print(f"❌ Error starting API server: {e}")
+                
+        elif choice == "6":
             view_database_stats()
             
-        elif choice == "6":
+        elif choice == "7":
             view_detailed_analytics()
             
-        elif choice == "7":
+        elif choice == "8":
             # Database management (keeping existing implementation)
             print("🗄️ Database management functionality...")
             
-        elif choice == "8":
+        elif choice == "9":
             # Export data (keeping existing implementation)
             print("📤 Export data functionality...")
             

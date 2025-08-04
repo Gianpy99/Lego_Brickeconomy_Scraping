@@ -93,6 +93,14 @@ class BaseLegoScraper:
         self.driver = webdriver.Chrome(service=service, options=options)
         return self.driver
     
+    def wait_and_find_element(self, by, value, timeout=5):
+        """Wait and find element with timeout"""
+        try:
+            wait = WebDriverWait(self.driver, timeout)
+            return wait.until(EC.presence_of_element_located((by, value)))
+        except:
+            return None
+    
     def extract_public_set_data(self, lego_code: str) -> Dict:
         """Extract basic LEGO set data from BrickEconomy"""
         from models import LegoSetDetails
@@ -160,6 +168,17 @@ class EnhancedLegoScraper(BaseLegoScraper):
     def __init__(self, config: Config):
         super().__init__(config)
         self.image_db = LegoImageDatabase(config)
+    
+    def __enter__(self):
+        """Context manager entry"""
+        self.setup_driver()
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit"""
+        if self.driver:
+            self.driver.quit()
+        return False
     
     def extract_enhanced_set_data(self, lego_code: str) -> Dict:
         """Extract comprehensive data including image"""
@@ -590,12 +609,26 @@ def main():
     if len(sys.argv) > 1:
         codes = [c.strip().replace('.', '') for c in sys.argv[1].split(',')]
     else:
-        codes_input = input("Enter LEGO codes (comma-separated) [default list]: ").strip()
-        if not codes_input:
+        # Se chiamato dall'interfaccia principale, usa i codici di default senza chiedere input
+        try:
+            # Controlla se stdin è disponibile (chiamata interattiva)
+            import select
+            import sys
+            if sys.stdin.isatty():
+                codes_input = input("Enter LEGO codes (comma-separated) [default list]: ").strip()
+                if not codes_input:
+                    codes = default_codes + extra_codes
+                    print(f"Using default codes: {', '.join(codes)}")
+                else:
+                    codes = [c.strip().replace('.', '') for c in codes_input.split(',')] + extra_codes
+            else:
+                # Non-interattivo, usa default
+                codes = default_codes + extra_codes
+                print(f"Using default codes: {', '.join(codes)}")
+        except:
+            # Fallback - usa sempre i default
             codes = default_codes + extra_codes
             print(f"Using default codes: {', '.join(codes)}")
-        else:
-            codes = [c.strip().replace('.', '') for c in codes_input.split(',')] + extra_codes
 
     # Create database
     df = create_lego_database(codes, headless=True)
@@ -609,6 +642,39 @@ def main():
         print(f"   📄 {file}")
 
     print(f"\n💡 Open the HTML file to view your LEGO database with images!")
+
+def update_lego_database_silent():
+    """Silent version for main interface - uses default codes without input"""
+    print("🏗️ LEGO DATABASE CREATOR")
+    print("Creates comprehensive database with images")
+    print("=" * 50)
+
+    # Lista principale di codici (senza punti) - usa sempre questi
+    default_codes = [
+        "3920","9469","9470","9471","9472","9473","9474","9476",
+        "10237","10316","10333", "30210","30211","30212","30213",
+        "30215","30216","40630","40631","40632","40693","40751",
+        "50011","71171","71218","71219","71220","79000","79001",
+        "79002","79003","79004","79005","79006","79007","79008",
+        "79010","79011","79012","79013","79014","79015","79016",
+        "79017","79018","5000202","850674","850680","850514",
+        "850515","850516","10367"
+    ]
+    
+    print(f"Using default codes: {', '.join(default_codes)}")
+
+    # Create database
+    df = create_lego_database(default_codes, headless=True)
+
+    # Export in all formats
+    output_files = export_database(df, format='all')
+
+    print(f"\n🎉 DATABASE COMPLETE!")
+    print(f"📁 Files created: {len(output_files)}")
+    for file in output_files:
+        print(f"   📄 {file}")
+
+    return df
 
 if __name__ == "__main__":
     main()

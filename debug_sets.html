@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Sets</title>
+</head>
+<body>
+    <div id="debug"></div>
+    <div id="setsGrid"></div>
+    
+    <script>
+        // Copia i dati dalla pagina originale
+        const setsData = [{"code": "10237", "name": "10237 Tower of Orthanc", "pieces": "2359", "minifigs": "5", "released": "July 2013", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£169.99", "image_path": "images/10237.jpg", "has_image": true}];
+        
+        console.log("SetsData loaded:", setsData.length, "sets");
+        console.log("First set:", setsData[0]);
+        
+        // Test renderSets function
+        function testRender() {
+            const grid = document.getElementById('setsGrid');
+            if (setsData.length === 0) {
+                grid.innerHTML = '<h3>No sets found</h3>';
+            } else {
+                grid.innerHTML = setsData.map(set => `
+                    <div style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
+                        <h4>${set.code}: ${set.name}</h4>
+                        <p>Pieces: ${set.pieces}</p>
+                        <p>Theme: ${set.theme}</p>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        document.getElementById('debug').innerHTML = `
+            <h2>Debug Info:</h2>
+            <p>Sets count: ${setsData.length}</p>
+            <button onclick="testRender()">Test Render</button>
+        `;
+        
+        // Auto render on load
+        document.addEventListener('DOMContentLoaded', testRender);
+    </script>
+</body>
+</html>

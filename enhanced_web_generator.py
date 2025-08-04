@@ -765,9 +765,15 @@ class ResponsiveWebGenerator:
             # Generate sets data as JSON for JavaScript
             sets_data = []
             for _, row in sets_df.iterrows():
-                # Fix image path for web (convert backslashes to forward slashes)
+                # Fix image path for web (convert to relative path and forward slashes)
                 image_path = row['image_path'] if pd.notna(row['image_path']) else ''
                 if image_path:
+                    # Convert to relative path for web (remove lego_database/ prefix)
+                    if image_path.startswith('lego_database/'):
+                        image_path = image_path[len('lego_database/'):]
+                    elif image_path.startswith('lego_database\\'):
+                        image_path = image_path[len('lego_database\\'):]
+                    # Convert backslashes to forward slashes for web
                     image_path = image_path.replace('\\', '/')
                 
                 sets_data.append({
@@ -1043,7 +1049,7 @@ class ResponsiveWebGenerator:
     </div>
     
     <script>
-        const setsData = {json.dumps(sets_data, ensure_ascii=False)};
+        const setsData = {json.dumps(sets_data, ensure_ascii=False, indent=2)};
         let filteredData = [...setsData];
         let currentPage = 1;
         const itemsPerPage = 12;

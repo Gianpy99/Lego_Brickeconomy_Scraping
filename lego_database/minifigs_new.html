@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📦 LEGO Sets Database</title>
+    <title>🧑‍🚀 LEGO Minifigures Database</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Enhanced responsive styles */
@@ -51,47 +51,6 @@
             font-size: clamp(2rem, 5vw, 3.5rem);
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        /* Navigation Bar */
-        .navigation-bar {
-            display: flex;
-            justify-content: center;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            border-radius: var(--border-radius);
-            padding: 15px;
-            margin-bottom: 30px;
-            box-shadow: var(--card-shadow);
-            gap: 5px;
-        }
-        
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
-            color: var(--text-color);
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        
-        .nav-link:hover {
-            background: var(--accent-color);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .nav-link.active {
-            background: var(--accent-color);
-            color: white;
-        }
-        
-        .nav-link i {
-            font-size: 1.1em;
         }
         
         .search-section {
@@ -156,14 +115,14 @@
             transform: translateY(-2px);
         }
         
-        .sets-grid {
+        .minifigs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
             margin-bottom: 40px;
         }
         
-        .set-card {
+        .minifig-card {
             background: rgba(255,255,255,0.97);
             border-radius: var(--border-radius);
             box-shadow: var(--card-shadow);
@@ -172,34 +131,30 @@
             border: 1px solid #eee;
         }
         
-        .set-card:hover {
+        .minifig-card:hover {
             box-shadow: 0 8px 32px rgba(44,62,80,0.18);
             transform: translateY(-4px);
         }
         
-        .set-image {
-            width: 200px;
+        .minifig-image {
+            width: 100%;
             height: 200px;
-            object-fit: contain;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+            object-fit: cover;
             background: #f8f9fa;
-            margin-bottom: 10px;
-            padding: 8px;
-            transition: transform 0.2s;
-            display: block;
-            max-width: 100%;
-            max-height: 100%;
         }
         
-        .set-header {
+        .minifig-info {
+            padding: 20px;
+        }
+        
+        .minifig-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 15px;
         }
         
-        .set-title {
+        .minifig-title {
             font-size: 1.1rem;
             font-weight: bold;
             color: var(--text-color);
@@ -237,19 +192,28 @@
             color: var(--text-color);
         }
         
-        .set-details {
+        .minifig-details {
             display: flex;
             align-items: center;
-            margin: 1px 10px;
-            color: #667;
+            margin: 8px 0;
+            color: #666;
             font-size: 0.95rem;
         }
         
-        .set-details i {
-            width: 10px;
-            margin-right: 20px;
+        .minifig-details i {
+            width: 20px;
+            margin-right: 10px;
             color: var(--accent-color);
         }
+        
+        .sets-list {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+            max-height: 60px;
+            overflow: hidden;
+        }
+        
         .pagination {
             display: flex;
             justify-content: center;
@@ -284,14 +248,14 @@
             grid-column: 1/-1;
             text-align: center;
             padding: 60px 20px;
-            color: #667;
+            color: #666;
         }
         
         .loading {
             grid-column: 1/-1;
             text-align: center;
             padding: 60px 20px;
-            color: #667;
+            color: #666;
         }
         
         .loading i {
@@ -316,12 +280,12 @@
                 gap: 10px;
             }
             
-            .sets-grid {
+            .minifigs-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
             
-            .set-header {
+            .minifig-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 10px;
@@ -332,45 +296,24 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📦 LEGO Sets Database</h1>
+            <h1>🧑‍🚀 LEGO Minifigures Database</h1>
             <p>Complete collection with ownership tracking</p>
-        </div>
-        
-        <!-- Navigation Bar -->
-        <div class="navigation-bar">
-            <a href="index.html" class="nav-link">
-                <i class="fas fa-home"></i> Home
-            </a>
-            <a href="sets.html" class="nav-link active">
-                <i class="fas fa-boxes"></i> Sets
-            </a>
-            <a href="minifigs.html" class="nav-link">
-                <i class="fas fa-users"></i> Minifigures
-            </a>
-            <a href="matrix.html" class="nav-link">
-                <i class="fas fa-th"></i> Matrix
-            </a>
-            <a href="analytics.html" class="nav-link">
-                <i class="fas fa-chart-line"></i> Analytics
-            </a>
         </div>
         
         <!-- Search and Filter Section -->
         <div class="search-section">
             <div class="search-controls">
-                <input type="text" id="setSearch" class="search-input" placeholder="🔍 Search sets by name, code, or theme...">
-                <select id="themeFilter" class="filter-select">
-                    <option value="">All Themes</option>
-                </select>
+                <input type="text" id="minifigSearch" class="search-input" placeholder="🔍 Search minifigs by name, code, or sets...">
                 <select id="yearFilter" class="filter-select">
                     <option value="">All Years</option>
+                </select>
+                <select id="setsFilter" class="filter-select">
+                    <option value="">All Sets</option>
                 </select>
                 <select id="sortBy" class="filter-select">
                     <option value="code">Sort by Code</option>
                     <option value="name">Sort by Name</option>
-                    <option value="pieces">Sort by Pieces</option>
-                    <option value="released">Sort by Release Date</option>
-                    <option value="price">Sort by Price</option>
+                    <option value="year">Sort by Year</option>
                 </select>
                 <button class="btn btn-primary" onclick="clearFilters()">
                     <i class="fas fa-times"></i> Clear
@@ -380,13 +323,12 @@
         
         <!-- Results Info -->
         <div id="resultsInfo"></div>
-        <div id="topValueTable" style="margin: 0 auto; max-width: 700px;"></div>
         
-        <!-- Sets Grid -->
-        <div id="setsGrid" class="sets-grid">
+        <!-- Minifigs Grid -->
+        <div id="minifigsGrid" class="minifigs-grid">
             <div class="loading">
                 <i class="fas fa-spinner"></i>
-                <h3>Loading LEGO Sets...</h3>
+                <h3>Loading LEGO Minifigures...</h3>
                 <p>Please wait while we fetch your collection</p>
             </div>
         </div>
@@ -396,57 +338,47 @@
     </div>
 
     <script>
-        let setsData = [];
+        let minifigsData = [];
         let filteredData = [];
         let currentPage = 1;
         const itemsPerPage = 24;
         
         document.addEventListener('DOMContentLoaded', function() {
-            loadSetsData();
+            loadMinifigsData();
         });
         
-        async function loadSetsData() {
+        async function loadMinifigsData() {
             try {
-                const response = await fetch('/api/sets');
+                const response = await fetch('/api/minifigs');
                 if (!response.ok) {
-                    throw new Error('Failed to fetch sets data');
+                    throw new Error('Failed to fetch minifigs data');
                 }
                 
-                setsData = await response.json();
-                filteredData = [...setsData];
+                minifigsData = await response.json();
+                filteredData = [...minifigsData];
                 
                 initializeFilters();
-                renderSets();
+                renderMinifigs();
                 
-                console.log('Loaded sets data:', setsData.length, 'sets');
+                console.log('Loaded minifigs data:', minifigsData.length, 'minifigs');
                 
             } catch (error) {
-                console.error('Error loading sets:', error);
-                document.getElementById('setsGrid').innerHTML = `
+                console.error('Error loading minifigs:', error);
+                document.getElementById('minifigsGrid').innerHTML = `
                     <div class="no-results">
                         <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger-color); margin-bottom: 20px;"></i>
-                        <h3>Error Loading Sets</h3>
-                        <p>Failed to load sets data. Please refresh the page.</p>
+                        <h3>Error Loading Minifigures</h3>
+                        <p>Failed to load minifigs data. Please refresh the page.</p>
                     </div>
                 `;
             }
         }
         
         function initializeFilters() {
-            // Populate theme filter
-            const themes = [...new Set(setsData.map(set => set.theme).filter(Boolean))];
-            const themeFilter = document.getElementById('themeFilter');
-            themes.forEach(theme => {
-                const option = document.createElement('option');
-                option.value = theme;
-                option.textContent = theme;
-                themeFilter.appendChild(option);
-            });
-            
             // Populate year filter
-            const years = [...new Set(setsData.map(set => {
-                if (!set.year_released) return '';
-                const match = set.year_released.match(/\d{4}/);
+            const years = [...new Set(minifigsData.map(minifig => {
+                if (!minifig.year_released) return '';
+                const match = minifig.year_released.match(/\d{4}/);
                 return match ? match[0] : '';
             }))].filter(Boolean).sort().reverse();
                         
@@ -458,91 +390,111 @@
                 yearFilter.appendChild(option);
             });
             
+            // Populate sets filter (extract unique set names from sets field)
+            const allSets = new Set();
+            minifigsData.forEach(minifig => {
+                if (minifig.sets) {
+                    // Extract set names from the sets field
+                    const setMatches = minifig.sets.match(/\d{4,6}\s+[^,]+/g);
+                    if (setMatches) {
+                        setMatches.forEach(set => {
+                            const cleanSet = set.trim();
+                            if (cleanSet) allSets.add(cleanSet);
+                        });
+                    }
+                }
+            });
+            
+            const setsFilter = document.getElementById('setsFilter');
+            [...allSets].sort().slice(0, 20).forEach(set => { // Limit to first 20 sets
+                const option = document.createElement('option');
+                option.value = set;
+                option.textContent = set.length > 30 ? set.substring(0, 30) + '...' : set;
+                setsFilter.appendChild(option);
+            });
+            
             // Add event listeners
-            document.getElementById('setSearch').addEventListener('input', filterSets);
-            document.getElementById('themeFilter').addEventListener('change', filterSets);
-            document.getElementById('yearFilter').addEventListener('change', filterSets);
-            document.getElementById('sortBy').addEventListener('change', filterSets);
+            document.getElementById('minifigSearch').addEventListener('input', filterMinifigs);
+            document.getElementById('yearFilter').addEventListener('change', filterMinifigs);
+            document.getElementById('setsFilter').addEventListener('change', filterMinifigs);
+            document.getElementById('sortBy').addEventListener('change', filterMinifigs);
         }
         
-        function filterSets() {
-            const searchTerm = document.getElementById('setSearch').value.toLowerCase();
-            const themeFilter = document.getElementById('themeFilter').value;
+        function filterMinifigs() {
+            const searchTerm = document.getElementById('minifigSearch').value.toLowerCase();
             const yearFilter = document.getElementById('yearFilter').value;
+            const setsFilter = document.getElementById('setsFilter').value;
             const sortBy = document.getElementById('sortBy').value;
             
-            filteredData = setsData.filter(set => {
+            filteredData = minifigsData.filter(minifig => {
                 const matchesSearch = !searchTerm || 
-                    set.name.toLowerCase().includes(searchTerm) ||
-                    set.code.toLowerCase().includes(searchTerm) ||
-                    (set.theme && set.theme.toLowerCase().includes(searchTerm));
+                    minifig.name.toLowerCase().includes(searchTerm) ||
+                    minifig.code.toLowerCase().includes(searchTerm) ||
+                    (minifig.sets && minifig.sets.toLowerCase().includes(searchTerm));
                     
-                const matchesTheme = !themeFilter || set.theme === themeFilter;
-                const matchesYear = !yearFilter || (set.year_released && set.year_released.includes(yearFilter));
+                const matchesYear = !yearFilter || (minifig.year_released && minifig.year_released.includes(yearFilter));
+                const matchesSets = !setsFilter || (minifig.sets && minifig.sets.includes(setsFilter));
                 
-                return matchesSearch && matchesTheme && matchesYear;
+                return matchesSearch && matchesYear && matchesSets;
             });
             
             // Sort data
             filteredData.sort((a, b) => {
                 switch(sortBy) {
                     case 'name': return a.name.localeCompare(b.name);
-                    case 'pieces': return (parseInt(a.pieces) || 0) - (parseInt(b.pieces) || 0);
-                    case 'released': return new Date(a.year_released) - new Date(b.year_released);
-                    case 'price':
-                        // Ordina per prezzo decrescente, set senza prezzo vanno in fondo
-                        const priceA = a.retail_price ? parseFloat(a.retail_price) : -1;
-                        const priceB = b.retail_price ? parseFloat(b.retail_price) : -1;
-                        return priceB - priceA;
+                    case 'year': return (a.year_released || '').localeCompare(b.year_released || '');
                     default: return a.code.localeCompare(b.code);
                 }
             });
             
             currentPage = 1;
-            renderSets();
+            renderMinifigs();
         }
         
-        function renderSets() {
-            console.log("Rendering sets:", filteredData.length);
+        function renderMinifigs() {
+            console.log("Rendering minifigs:", filteredData.length);
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
             const pageData = filteredData.slice(startIndex, endIndex);
             
-            const grid = document.getElementById('setsGrid');
+            const grid = document.getElementById('minifigsGrid');
             
             if (pageData.length === 0) {
                 grid.innerHTML = `
                     <div class="no-results">
                         <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
-                        <h3>No sets found</h3>
+                        <h3>No minifigures found</h3>
                         <p>Try adjusting your search criteria</p>
                     </div>
                 `;
             } else {
-                grid.innerHTML = pageData.map(set => `
-                    <div class="set-card">
-                        ${set.image_path ? 
-                            `<img src="${set.image_path}" alt="LEGO ${set.code}" class="set-image" loading="lazy">` :
-                            `<div class="set-image" style="display: flex; align-items: center; justify-content: center; background: #f8f9fa; color: #667;">
-                                <i class="fas fa-image" style="font-size: 2rem;"></i>
+                grid.innerHTML = pageData.map(minifig => `
+                    <div class="minifig-card">
+                        ${minifig.image_path ? 
+                            `<img src="${minifig.image_path}" alt="LEGO ${minifig.code}" class="minifig-image" loading="lazy">` :
+                            `<div class="minifig-image" style="display: flex; align-items: center; justify-content: center; background: #f8f9fa; color: #666;">
+                                <i class="fas fa-user" style="font-size: 2rem;"></i>
                             </div>`
                         }
-                        <div class="set-info">
-                            <div class="set-header">
-                                <div class="set-title">${set.code}: ${set.name}</div>
-                                <div class="owned-checkbox-container ${set.owned ? 'owned' : ''}">
-                                    <input type="checkbox" id="owned_${set.code}" class="owned-checkbox" 
-                                           ${set.owned ? 'checked' : ''} 
-                                           onchange="updateOwnership('${set.code}', this.checked)">
-                                    <label for="owned_${set.code}" class="owned-label">
-                                        ${set.owned ? 'Owned' : 'Not Owned'}
+                        <div class="minifig-info">
+                            <div class="minifig-header">
+                                <div class="minifig-title">${minifig.code}: ${minifig.name}</div>
+                                <div class="owned-checkbox-container ${minifig.owned ? 'owned' : ''}">
+                                    <input type="checkbox" id="owned_${minifig.code}" class="owned-checkbox" 
+                                           ${minifig.owned ? 'checked' : ''} 
+                                           onchange="updateOwnership('${minifig.code}', this.checked)">
+                                    <label for="owned_${minifig.code}" class="owned-label">
+                                        ${minifig.owned ? 'Owned' : 'Not Owned'}
                                     </label>
                                 </div>
                             </div>
-                            <div class="set-details"><i class="fas fa-puzzle-piece"></i> ${set.pieces || 'N/A'} pieces</div>
-                            <div class="set-details"><i class="fas fa-calendar"></i> ${set.year_released || 'N/A'}</div>
-                            <div class="set-details"><i class="fas fa-tag"></i> ${set.theme || 'N/A'}</div>
-                            ${set.retail_price ? `<div class="set-details"><i class="fas fa-euro-sign"></i> €${set.retail_price}</div>` : ''}
+                            <div class="minifig-details"><i class="fas fa-calendar"></i> ${minifig.year_released || 'N/A'}</div>
+                            ${minifig.retail_price ? `<div class="minifig-details"><i class="fas fa-pound-sign"></i> £${minifig.retail_price}</div>` : ''}
+                            ${minifig.sets ? 
+                                `<div class="minifig-details"><i class="fas fa-boxes"></i> 
+                                 <div class="sets-list">Appears in: ${minifig.sets}</div></div>` : 
+                                '<div class="minifig-details"><i class="fas fa-boxes"></i> No sets data</div>'
+                            }
                         </div>
                     </div>
                 `).join('');
@@ -550,18 +502,17 @@
             
             renderPagination();
             updateResultsInfo();
-            renderTopValueTable();
         }
         
-        async function updateOwnership(legoCode, isOwned) {
+        async function updateOwnership(minifigCode, isOwned) {
             try {
-                const response = await fetch('/api/sets/owned', {
+                const response = await fetch('/api/minifigs/owned', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        lego_code: legoCode,
+                        minifig_code: minifigCode,
                         owned: isOwned ? 1 : 0
                     })
                 });
@@ -574,18 +525,18 @@
                 console.log('Ownership updated:', result);
                 
                 // Update local data
-                const setIndex = setsData.findIndex(set => set.code === legoCode);
-                if (setIndex !== -1) {
-                    setsData[setIndex].owned = isOwned ? 1 : 0;
+                const minifigIndex = minifigsData.findIndex(minifig => minifig.code === minifigCode);
+                if (minifigIndex !== -1) {
+                    minifigsData[minifigIndex].owned = isOwned ? 1 : 0;
                 }
                 
-                const filteredIndex = filteredData.findIndex(set => set.code === legoCode);
+                const filteredIndex = filteredData.findIndex(minifig => minifig.code === minifigCode);
                 if (filteredIndex !== -1) {
                     filteredData[filteredIndex].owned = isOwned ? 1 : 0;
                 }
                 
                 // Update UI
-                const container = document.querySelector(`#owned_${legoCode}`).closest('.owned-checkbox-container');
+                const container = document.querySelector(`#owned_${minifigCode}`).closest('.owned-checkbox-container');
                 const label = container.querySelector('.owned-label');
                 
                 if (isOwned) {
@@ -596,16 +547,19 @@
                     label.textContent = 'Not Owned';
                 }
                 
-                showNotification(`✅ Set ${legoCode} ${isOwned ? 'marked as owned' : 'marked as not owned'}`, 'success');
+                showNotification(`✅ Minifig ${minifigCode} ${isOwned ? 'marked as owned' : 'marked as not owned'}`, 'success');
+                
+                // Update results info
+                updateResultsInfo();
                 
             } catch (error) {
                 console.error('Error updating ownership:', error);
                 
                 // Revert checkbox state
-                const checkbox = document.getElementById(`owned_${legoCode}`);
+                const checkbox = document.getElementById(`owned_${minifigCode}`);
                 checkbox.checked = !isOwned;
                 
-                showNotification(`❌ Failed to update ownership for set ${legoCode}`, 'error');
+                showNotification(`❌ Failed to update ownership for minifig ${minifigCode}`, 'error');
             }
         }
         
@@ -646,7 +600,7 @@
         
         function changePage(page) {
             currentPage = page;
-            renderSets();
+            renderMinifigs();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
@@ -654,11 +608,11 @@
             const startIndex = (currentPage - 1) * itemsPerPage + 1;
             const endIndex = Math.min(currentPage * itemsPerPage, filteredData.length);
             const total = filteredData.length;
-            const owned = filteredData.filter(set => set.owned).length;
+            const owned = filteredData.filter(minifig => minifig.owned).length;
             
             document.getElementById('resultsInfo').innerHTML = `
-                <p style="text-align: center; color: #667; margin: 20px 0;">
-                    Showing ${startIndex}-${endIndex} of ${total} sets | 
+                <p style="text-align: center; color: #666; margin: 20px 0;">
+                    Showing ${startIndex}-${endIndex} of ${total} minifigures | 
                     <span style="color: var(--success-color); font-weight: bold;">${owned} owned</span> | 
                     <span style="color: var(--danger-color); font-weight: bold;">${total - owned} not owned</span>
                 </p>
@@ -666,44 +620,11 @@
         }
         
         function clearFilters() {
-            document.getElementById('setSearch').value = '';
-            document.getElementById('themeFilter').value = '';
+            document.getElementById('minifigSearch').value = '';
             document.getElementById('yearFilter').value = '';
+            document.getElementById('setsFilter').value = '';
             document.getElementById('sortBy').value = 'code';
-            filterSets();
-
-        }
-
-        // Rende la tabella dei 10 set di maggior valore
-        function renderTopValueTable() {
-            // Filtra solo set con valore numerico
-            const valueSets = setsData.filter(s => s.retail_price && !isNaN(parseFloat(s.retail_price)));
-            if (valueSets.length === 0) {
-                document.getElementById('topValueTable').innerHTML = `<p style="text-align:center; color:#667;">Nessun dato sul valore disponibile.</p>`;
-                return;
-            }
-            // Ordina per valore decrescente
-            valueSets.sort((a, b) => parseFloat(b.retail_price) - parseFloat(a.retail_price));
-            const top10 = valueSets.slice(0, 10);
-            let tableHTML = `<h3 style="text-align:center; color:var(--accent-color); margin-bottom:10px;">💰 Top 10 Set Value</h3>`;
-            tableHTML += `<table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
-                <thead>
-                    <tr style="background:var(--accent-color); color:white;">
-                        <th style="padding:10px; border-radius:8px 0 0 8px;">Codice</th>
-                        <th style="padding:10px;">Nome</th>
-                        <th style="padding:10px; border-radius:0 8px 8px 0;">Valore (€)</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            top10.forEach(s => {
-                tableHTML += `<tr style="background:${s.owned ? 'var(--success-color)' : '#f8f9fa'}; color:${s.owned ? 'white' : '#2c3e50'};">
-                    <td style="padding:10px; font-weight:bold;">${s.code}</td>
-                    <td style="padding:10px;">${s.name}</td>
-                    <td style="padding:10px; text-align:right;">€${parseFloat(s.retail_price).toFixed(2)}</td>
-                </tr>`;
-            });
-            tableHTML += `</tbody></table>`;
-            document.getElementById('topValueTable').innerHTML = tableHTML;
+            filterMinifigs();
         }
         
         function showNotification(message, type = 'info') {

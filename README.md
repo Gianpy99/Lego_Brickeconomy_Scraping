@@ -1,6 +1,6 @@
-# LEGO BrickEconomy Professional Scraper
+# LEGO LEGO Collection Manager con BrickEconomy Integration
 
-A professional web scraper for extracting LEGO set information from BrickEconomy.com with robust error handling, modular design, and comprehensive data export capabilities.
+Un'applicazione web per gestire la collezione LEGO, con interfaccia REST API e pagine statiche responsive, integrata con dati di BrickEconomy.
 
 ## Features
 
@@ -14,35 +14,53 @@ A professional web scraper for extracting LEGO set information from BrickEconomy
 - **Data Validation**: Clean and validate scraped data
 - **Comprehensive Logging**: Detailed logging with multiple levels
 
-## Project Structure
+## Struttura del Progetto
 
-```
-├── main.py              # Command-line interface
-├── demo.py              # Interactive demonstration
-├── scraper.py           # Core scraping functionality
-├── config.py            # Configuration management
-├── models.py            # Data models
-├── data_loader.py       # Input data handling
-├── data_export.py       # Output data handling
-├── exceptions.py        # Custom exceptions
-├── requirements.txt     # Python dependencies
-├── .env.example         # Environment variables template
-└── setup.py             # Setup script
-```
+- main.py                   : punto di ingresso, server HTTP e API REST
+- config.py                 : gestione configurazione da file .env
+- database_manager.py       : operazioni sul database SQLite (backup, query, validazione)
+- lego_database.py          : scraper per informazioni sui set LEGO
+- minifig_database.py       : scraper per informazioni sulle minifigure
+- enhanced_web_generator.py : generazione delle pagine web responsive
+- analyze_matrix.py         : generazione vista matrice relazioni
+- populate_connections.py   : popolamento connessioni set-minifigure
+- check_db.py               : controlli di integrità del database
+- models.py                 : definizione dei modelli dati
+- logging_system.py         : configurazione del logging
+- exceptions.py             : eccezioni personalizzate
+- system_test.py            : test di sistema end-to-end
+- requirements.txt          : dipendenze Python
+- .env.example              : template file di configurazione
 
-## Installation
+### Cartelle principali
+- lego_database/            : pagine web statiche e database
+  - index.html               : dashboard principale
+  - sets.html                : elenco set LEGO
+  - minifigs.html            : elenco minifigure
+  - analytics.html           : dashboard analytics
+  - matrix.html              : vista matrice relazioni
+  - LegoDatabase.db          : database SQLite
+  - images/                  : immagini dei set e minifigure
+  - backups/                 : backup automatici del database
+- logs/                     : file di log generati
 
-### Quick Setup (Recommended)
+## Installazione
 
-1. **Run the quick setup script:**
-```bash
-python quick_start.py
-```
-This will automatically:
-- Check Python 3.13 availability
-- Create virtual environment
-- Install all dependencies
-- Create .env file template
+1. Clona il repository:
+   ```powershell
+   git clone https://github.com/Gianpy99/Lego_Brickeconomy_Scraping.git
+   cd Lego_Brickeconomy_Scraping
+   ```
+2. Crea e attiva un ambiente virtuale Python:
+   ```powershell
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+3. Installa le dipendenze:
+   ```powershell
+   pip install -r requirements.txt
+   ```
+4. Copia il file `.env.example` in `.env` e configura i parametri se necessario.
 
 ### Manual Setup
 
@@ -75,33 +93,28 @@ BRICKECONOMY_USERNAME=your_username
 BRICKECONOMY_PASSWORD=your_password
 ```
 
-## Usage
+## Avvio dell'Applicazione
 
-### Quick Start
-
-```bash
-# Run interactive demonstration
-python demo.py
-
-# Quick test
-python main.py --codes "3920"
+Esegui il server HTTP e le API:
+```powershell
+python main.py
 ```
+Apri il browser su http://localhost:8000 per accedere alla dashboard principale.
 
-### Command Line Interface
+## Funzionalità Principali
 
-```bash
-# Scrape specific LEGO codes
-python main.py --codes "3920,9469,10333"
-
-# From Excel file
-python main.py --excel-file "input.xlsx" --column "Set Code"
-
-# From CSV file
-python main.py --csv-file "codes.csv" --output-format json
-
-# From text file with custom options
-python main.py --text-file "codes.txt" --headless --verbose --delay 3
-```
+- **API REST**:
+  - `/api/sets`        : restituisce lista di set
+  - `/api/minifigs`    : restituisce lista di minifigure
+  - `/api/matrix-data`: dati per la vista matrice
+  - `/api/set/{id}`    : dettagli di un set
+  - `/api/minifig/{id}`: dettagli di una minifigure
+- **Pagine Web Statiche**:
+  - `index.html`   : dashboard con statistiche e grafici
+  - `sets.html`    : elenco e dettagli dei set
+  - `minifigs.html`: elenco e dettagli delle minifigure
+  - `analytics.html`: analisi avanzata con Chart.js
+  - `matrix.html`  : matrice relazioni set-minifigura
 
 ### Interactive Demonstration
 
@@ -129,15 +142,12 @@ exporter = DataExporter()
 exporter.to_excel(results)
 ```
 
-## Configuration
+## Configurazione
 
-Key configuration options in `config.py`:
-
-- `TARGET_THEMES`: LEGO themes to include in scraping
-- `WAIT_TIME`: Selenium wait timeout
-- `SCRAPING_DELAY`: Delay between requests
-- `HEADLESS`: Run browser in headless mode
-- `OUTPUT_DIRECTORY`: Directory for output files
+Modifica `config.py` o `.env` per personalizzare:
+- `SCRAPING_DELAY`     : intervallo tra le richieste di scraping
+- `HEADLESS`           : modalità headless per Selenium
+- `OUTPUT_DIRECTORY`   : directory di output per dati ed export
 
 ## Output Data
 
@@ -171,6 +181,6 @@ Detailed logging is available at multiple levels:
 - ERROR: Error messages with stack traces
 - WARNING: Non-critical issues
 
-## License
+## Licenza
 
-This project is for educational purposes only. Please respect BrickEconomy's terms of service and implement appropriate rate limiting.
+Progetto per scopi educativi. Rispetta i termini di servizio di BrickEconomy e utilizza un rate limiting adeguato.

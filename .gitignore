@@ -18,6 +18,21 @@ venv_py313/
 .vscode/
 .idea/
 *.swp
+
+# Temporary and backup files
+*_old.html
+*_new.html
+*_backup.html
+temp_*
+debug_*
+*.tmp
+
+# Log files
+logs/*.log
+
+# Database backups (keep only recent ones)
+lego_database/backups/*.db
+!lego_database/backups/latest.db
 *.swo
 
 # Output files

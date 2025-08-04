@@ -1,4 +1,34 @@
+"""
+Enhanced Analytics Dashboard Generator
+Creates interactive analytics with charts and visualizations
+"""
 
+import sqlite3
+import pandas as pd
+import json
+from pathlib import Path
+from datetime import datetime
+from collections import Counter
+from logging_system import get_logger
+
+logger = get_logger(__name__)
+
+
+def generate_analytics_page():
+    """Generate enhanced analytics dashboard with interactive charts"""
+    try:
+        db_path = "lego_database/LegoDatabase.db"
+        output_dir = Path("lego_database")
+        
+        with sqlite3.connect(db_path) as conn:
+            # Get sets data
+            sets_df = pd.read_sql_query("SELECT * FROM lego_sets", conn)
+            minifigs_df = pd.read_sql_query("SELECT * FROM minifig", conn)
+            
+        # Calculate analytics data
+        analytics_data = calculate_analytics(sets_df, minifigs_df)
+        
+        html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,13 +39,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Enhanced responsive styles */
-        * {
+        * {{
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
+        }}
         
-        :root {
+        :root {{
             --primary-color: #667eea;
             --secondary-color: #764ba2;
             --accent-color: #3498db;
@@ -26,44 +56,44 @@
             --light-bg: #f8fafc;
             --card-shadow: 0 4px 16px rgba(44, 62, 80, 0.08);
             --border-radius: 12px;
-        }
+        }}
         
-        body {
+        body {{
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
             color: var(--text-color);
             line-height: 1.6;
-        }
+        }}
         
-        .container {
+        .container {{
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
-        }
+        }}
         
-        .header {
+        .header {{
             text-align: center;
             color: white;
             margin-bottom: 40px;
             animation: fadeInDown 0.8s ease-out;
-        }
+        }}
         
-        .header h1 {
+        .header h1 {{
             font-size: clamp(2rem, 5vw, 3.5rem);
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
+        }}
         
         /* Dashboard grid */
-        .dashboard-grid {
+        .dashboard-grid {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 30px;
             margin-bottom: 40px;
-        }
+        }}
         
-        .chart-card {
+        .chart-card {{
             background: rgba(255,255,255,0.97);
             border-radius: var(--border-radius);
             padding: 28px 24px;
@@ -71,73 +101,73 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+        }}
         
-        .chart-card:hover {
+        .chart-card:hover {{
             transform: translateY(-4px);
             box-shadow: 0 8px 32px rgba(44,62,80,0.15);
-        }
+        }}
         
-        .chart-header {
+        .chart-header {{
             display: flex;
             align-items: center;
             margin-bottom: 20px;
             gap: 10px;
-        }
+        }}
         
-        .chart-header h3 {
+        .chart-header h3 {{
             color: var(--text-color);
             margin: 0;
             font-size: 1.3rem;
-        }
+        }}
         
-        .chart-container {
+        .chart-container {{
             position: relative;
             height: 300px;
             width: 100%;
-        }
+        }}
         
         /* Summary stats */
-        .summary-stats {
+        .summary-stats {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
-        }
+        }}
         
-        .stat-card {
+        .stat-card {{
             background: rgba(255,255,255,0.97);
             border-radius: var(--border-radius);
             padding: 24px;
             text-align: center;
             box-shadow: var(--card-shadow);
             border-left: 4px solid var(--accent-color);
-        }
+        }}
         
-        .stat-number {
+        .stat-number {{
             font-size: 2.5rem;
             font-weight: bold;
             color: var(--accent-color);
             margin-bottom: 8px;
-        }
+        }}
         
-        .stat-label {
+        .stat-label {{
             color: #666;
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
+        }}
         
         /* Table styles */
-        .data-table {
+        .data-table {{
             background: rgba(255,255,255,0.97);
             border-radius: var(--border-radius);
             overflow: hidden;
             box-shadow: var(--card-shadow);
             margin-bottom: 30px;
-        }
+        }}
         
-        .table-header {
+        .table-header {{
             background: var(--accent-color);
             color: white;
             padding: 20px;
@@ -145,60 +175,60 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
+        }}
         
-        .table-content {
+        .table-content {{
             max-height: 400px;
             overflow-y: auto;
-        }
+        }}
         
-        table {
+        table {{
             width: 100%;
             border-collapse: collapse;
-        }
+        }}
         
-        th, td {
+        th, td {{
             padding: 12px 16px;
             text-align: left;
             border-bottom: 1px solid #eee;
-        }
+        }}
         
-        th {
+        th {{
             background: #f8f9fa;
             font-weight: 600;
             color: var(--text-color);
-        }
+        }}
         
-        tr:hover {
+        tr:hover {{
             background: #f8f9fa;
-        }
+        }}
         
         /* Filter controls */
-        .filter-section {
+        .filter-section {{
             background: rgba(255,255,255,0.95);
             border-radius: var(--border-radius);
             padding: 24px;
             margin-bottom: 30px;
             box-shadow: var(--card-shadow);
-        }
+        }}
         
-        .filter-grid {
+        .filter-grid {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             align-items: center;
-        }
+        }}
         
-        .filter-select {
+        .filter-select {{
             padding: 12px 16px;
             border: 2px solid #e1e8ed;
             border-radius: 8px;
             background: white;
             font-size: 14px;
             cursor: pointer;
-        }
+        }}
         
-        .btn {
+        .btn {{
             padding: 12px 20px;
             border: none;
             border-radius: 8px;
@@ -210,55 +240,55 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-        }
+        }}
         
-        .btn-secondary {
+        .btn-secondary {{
             background: var(--light-bg);
             color: var(--text-color);
             border: 2px solid #e1e8ed;
-        }
+        }}
         
-        .btn-primary {
+        .btn-primary {{
             background: var(--accent-color);
             color: white;
-        }
+        }}
         
-        .btn:hover {
+        .btn:hover {{
             transform: translateY(-2px);
-        }
+        }}
         
-        .footer {
+        .footer {{
             text-align: center;
             margin-top: 40px;
             color: rgba(255,255,255,0.8);
-        }
+        }}
         
-        @keyframes fadeInDown {
-            from {
+        @keyframes fadeInDown {{
+            from {{
                 opacity: 0;
                 transform: translateY(-30px);
-            }
-            to {
+            }}
+            to {{
                 opacity: 1;
                 transform: translateY(0);
-            }
-        }
+            }}
+        }}
         
-        @media (max-width: 768px) {
-            .dashboard-grid {
+        @media (max-width: 768px) {{
+            .dashboard-grid {{
                 grid-template-columns: 1fr;
                 gap: 20px;
-            }
+            }}
             
-            .summary-stats {
+            .summary-stats {{
                 grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
-            }
+            }}
             
-            .chart-container {
+            .chart-container {{
                 height: 250px;
-            }
-        }
+            }}
+        }}
     </style>
 </head>
 <body>
@@ -271,23 +301,23 @@
         <!-- Summary Statistics -->
         <div class="summary-stats">
             <div class="stat-card">
-                <div class="stat-number">52</div>
+                <div class="stat-number">{analytics_data['total_sets']}</div>
                 <div class="stat-label">Total Sets</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">155</div>
+                <div class="stat-number">{analytics_data['total_minifigs']}</div>
                 <div class="stat-label">Total Minifigs</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">563</div>
+                <div class="stat-number">{analytics_data['avg_pieces']:.0f}</div>
                 <div class="stat-label">Avg Pieces</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">£52</div>
+                <div class="stat-number">£{analytics_data['avg_price']:.0f}</div>
                 <div class="stat-label">Avg Price</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">6</div>
+                <div class="stat-number">{analytics_data['years_span']}</div>
                 <div class="stat-label">Years Span</div>
             </div>
         </div>
@@ -376,87 +406,7 @@
                         </tr>
                     </thead>
                     <tbody id="topSetsTable">
-                        
-            <tr>
-                <td>10316</td>
-                <td>10316 The Lord of the Rings Rivendell</td>
-                <td>6,167</td>
-                <td>Icons</td>
-                <td>£429.99</td>
-            </tr>
-        
-            <tr>
-                <td>10333</td>
-                <td>10333 The Lord of the Rings Barad-Dur</td>
-                <td>5,471</td>
-                <td>Icons</td>
-                <td>£399.99</td>
-            </tr>
-        
-            <tr>
-                <td>10237</td>
-                <td>10237 Tower of Orthanc</td>
-                <td>2,359</td>
-                <td>The Lord of the Rings</td>
-                <td>£169.99</td>
-            </tr>
-        
-            <tr>
-                <td>9474</td>
-                <td>9474 The Battle Of Helm's Deep</td>
-                <td>1,368</td>
-                <td>The Lord of the Rings</td>
-                <td>£99.99</td>
-            </tr>
-        
-            <tr>
-                <td>10367</td>
-                <td>10367 The Lord of the Rings Balrog Book Nook</td>
-                <td>1,201</td>
-                <td>Icons</td>
-                <td>£109.99</td>
-            </tr>
-        
-            <tr>
-                <td>79018</td>
-                <td>79018 The Lonely Mountain</td>
-                <td>866</td>
-                <td>The Hobbit</td>
-                <td>£99.99</td>
-            </tr>
-        
-            <tr>
-                <td>79010</td>
-                <td>79010 The Goblin King Battle</td>
-                <td>841</td>
-                <td>The Hobbit</td>
-                <td>£79.99</td>
-            </tr>
-        
-            <tr>
-                <td>79014</td>
-                <td>79014 Dol Guldur Battle</td>
-                <td>797</td>
-                <td>The Hobbit</td>
-                <td>£69.99</td>
-            </tr>
-        
-            <tr>
-                <td>9473</td>
-                <td>9473 The Mines of Moria</td>
-                <td>776</td>
-                <td>The Lord of the Rings</td>
-                <td>£69.99</td>
-            </tr>
-        
-            <tr>
-                <td>79008</td>
-                <td>79008 Pirate Ship Ambush</td>
-                <td>756</td>
-                <td>The Lord of the Rings</td>
-                <td>£89.99</td>
-            </tr>
-        
+                        {generate_top_sets_table(analytics_data['top_sets'])}
                     </tbody>
                 </table>
             </div>
@@ -471,24 +421,24 @@
     
     <script>
         // Analytics data
-        const analyticsData = {"total_sets": 52, "total_minifigs": 155, "avg_pieces": 563.2307692307693, "avg_price": 52.41183673469387, "years_span": 6, "theme_distribution": {"labels": ["The Hobbit", "The Lord of the Rings", "Gear", "Icons", "BrickHeadz", "Dimensions", "Games"], "values": [18, 15, 5, 4, 4, 4, 2]}, "year_distribution": {"labels": ["2012", "2013", "2014", "2015", "2023", "2024"], "values": [21, 14, 4, 4, 4, 3]}, "pieces_distribution": {"labels": ["0-100", "101-300", "301-500", "501-1000", "1000+"], "values": [16, 14, 10, 7, 5]}, "price_pieces_correlation": [{"x": 227.0, "y": 19.99}, {"x": 430.0, "y": 49.99}, {"x": 776.0, "y": 69.99}, {"x": 1368.0, "y": 99.99}, {"x": 366.0, "y": 39.99}, {"x": 2359.0, "y": 169.99}, {"x": 6167.0, "y": 429.99}, {"x": 5471.0, "y": 399.99}, {"x": 33.0, "y": 3.15}, {"x": 21.0, "y": 3.15}, {"x": 27.0, "y": 3.94}, {"x": 31.0, "y": 3.94}, {"x": 31.0, "y": 3.94}, {"x": 184.0, "y": 13.49}, {"x": 348.0, "y": 17.99}, {"x": 261.0, "y": 17.99}, {"x": 297.0, "y": 17.99}, {"x": 269.0, "y": 99.99}, {"x": 39.0, "y": 14.99}, {"x": 36.0, "y": 14.99}, {"x": 56.0, "y": 14.99}, {"x": 105.0, "y": 11.99}, {"x": 298.0, "y": 24.99}, {"x": 400.0, "y": 49.99}, {"x": 652.0, "y": 59.99}, {"x": 334.0, "y": 39.99}, {"x": 113.0, "y": 11.99}, {"x": 243.0, "y": 29.99}, {"x": 656.0, "y": 59.99}, {"x": 756.0, "y": 89.99}, {"x": 841.0, "y": 79.99}, {"x": 217.0, "y": 19.99}, {"x": 276.0, "y": 29.99}, {"x": 470.0, "y": 49.99}, {"x": 797.0, "y": 69.99}, {"x": 101.0, "y": 11.99}, {"x": 313.0, "y": 34.99}, {"x": 472.0, "y": 59.99}, {"x": 866.0, "y": 99.99}, {"x": 1201.0, "y": 109.99}, {"x": 394.0, "y": 24.99}, {"x": 338.0, "y": 29.99}, {"x": 83.0, "y": 11.99}, {"x": 257.0, "y": 29.99}], "top_sets": [{"lego_code": "10316", "official_name": "10316 The Lord of the Rings Rivendell", "pieces_num": 6167.0, "theme": "Icons", "retail_price_gbp": "£429.99"}, {"lego_code": "10333", "official_name": "10333 The Lord of the Rings Barad-Dur", "pieces_num": 5471.0, "theme": "Icons", "retail_price_gbp": "£399.99"}, {"lego_code": "10237", "official_name": "10237 Tower of Orthanc", "pieces_num": 2359.0, "theme": "The Lord of the Rings", "retail_price_gbp": "£169.99"}, {"lego_code": "9474", "official_name": "9474 The Battle Of Helm's Deep", "pieces_num": 1368.0, "theme": "The Lord of the Rings", "retail_price_gbp": "£99.99"}, {"lego_code": "10367", "official_name": "10367 The Lord of the Rings Balrog Book Nook", "pieces_num": 1201.0, "theme": "Icons", "retail_price_gbp": "£109.99"}, {"lego_code": "79018", "official_name": "79018 The Lonely Mountain", "pieces_num": 866.0, "theme": "The Hobbit", "retail_price_gbp": "£99.99"}, {"lego_code": "79010", "official_name": "79010 The Goblin King Battle", "pieces_num": 841.0, "theme": "The Hobbit", "retail_price_gbp": "£79.99"}, {"lego_code": "79014", "official_name": "79014 Dol Guldur Battle", "pieces_num": 797.0, "theme": "The Hobbit", "retail_price_gbp": "£69.99"}, {"lego_code": "9473", "official_name": "9473 The Mines of Moria", "pieces_num": 776.0, "theme": "The Lord of the Rings", "retail_price_gbp": "£69.99"}, {"lego_code": "79008", "official_name": "79008 Pirate Ship Ambush", "pieces_num": 756.0, "theme": "The Lord of the Rings", "retail_price_gbp": "£89.99"}]};
+        const analyticsData = {json.dumps(analytics_data, ensure_ascii=False)};
         
         // Chart instances
         let themeChart, yearChart, piecesChart, priceChart;
         
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {{
             initializeCharts();
             populateFilters();
-        });
+        }});
         
-        function initializeCharts() {
+        function initializeCharts() {{
             // Theme distribution chart
             const themeCtx = document.getElementById('themeChart').getContext('2d');
-            themeChart = new Chart(themeCtx, {
+            themeChart = new Chart(themeCtx, {{
                 type: 'doughnut',
-                data: {
+                data: {{
                     labels: analyticsData.theme_distribution.labels,
-                    datasets: [{
+                    datasets: [{{
                         data: analyticsData.theme_distribution.values,
                         backgroundColor: [
                             '#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6',
@@ -496,146 +446,275 @@
                         ],
                         borderWidth: 2,
                         borderColor: '#fff'
-                    }]
-                },
-                options: {
+                    }}]
+                }},
+                options: {{
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
+                    plugins: {{
+                        legend: {{
                             position: 'bottom'
-                        }
-                    }
-                }
-            });
+                        }}
+                    }}
+                }}
+            }});
             
             // Year distribution chart
             const yearCtx = document.getElementById('yearChart').getContext('2d');
-            yearChart = new Chart(yearCtx, {
+            yearChart = new Chart(yearCtx, {{
                 type: 'bar',
-                data: {
+                data: {{
                     labels: analyticsData.year_distribution.labels,
-                    datasets: [{
+                    datasets: [{{
                         label: 'Sets Released',
                         data: analyticsData.year_distribution.values,
                         backgroundColor: '#2ecc71',
                         borderColor: '#27ae60',
                         borderWidth: 1
-                    }]
-                },
-                options: {
+                    }}]
+                }},
+                options: {{
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: {
+                    scales: {{
+                        y: {{
                             beginAtZero: true
-                        }
-                    }
-                }
-            });
+                        }}
+                    }}
+                }}
+            }});
             
             // Pieces distribution chart
             const piecesCtx = document.getElementById('piecesChart').getContext('2d');
-            piecesChart = new Chart(piecesCtx, {
+            piecesChart = new Chart(piecesCtx, {{
                 type: 'line',
-                data: {
+                data: {{
                     labels: analyticsData.pieces_distribution.labels,
-                    datasets: [{
+                    datasets: [{{
                         label: 'Number of Sets',
                         data: analyticsData.pieces_distribution.values,
                         borderColor: '#f39c12',
                         backgroundColor: 'rgba(243, 156, 18, 0.1)',
                         fill: true,
                         tension: 0.4
-                    }]
-                },
-                options: {
+                    }}]
+                }},
+                options: {{
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: {
+                    scales: {{
+                        y: {{
                             beginAtZero: true
-                        }
-                    }
-                }
-            });
+                        }}
+                    }}
+                }}
+            }});
             
             // Price analysis chart
             const priceCtx = document.getElementById('priceChart').getContext('2d');
-            priceChart = new Chart(priceCtx, {
+            priceChart = new Chart(priceCtx, {{
                 type: 'scatter',
-                data: {
-                    datasets: [{
+                data: {{
+                    datasets: [{{
                         label: 'Price vs Pieces',
                         data: analyticsData.price_pieces_correlation,
                         backgroundColor: '#e74c3c',
                         borderColor: '#c0392b'
-                    }]
-                },
-                options: {
+                    }}]
+                }},
+                options: {{
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            title: {
+                    scales: {{
+                        x: {{
+                            title: {{
                                 display: true,
                                 text: 'Number of Pieces'
-                            }
-                        },
-                        y: {
-                            title: {
+                            }}
+                        }},
+                        y: {{
+                            title: {{
                                 display: true,
                                 text: 'Price (GBP)'
-                            }
-                        }
-                    }
-                }
-            });
-        }
+                            }}
+                        }}
+                    }}
+                }}
+            }});
+        }}
         
-        function populateFilters() {
+        function populateFilters() {{
             // Populate theme filter
             const themes = [...new Set(analyticsData.theme_distribution.labels)];
             const themeFilter = document.getElementById('themeFilter');
-            themes.forEach(theme => {
+            themes.forEach(theme => {{
                 const option = document.createElement('option');
                 option.value = theme;
                 option.textContent = theme;
                 themeFilter.appendChild(option);
-            });
+            }});
             
             // Populate year filter
             const years = analyticsData.year_distribution.labels;
             const yearFilter = document.getElementById('yearFilter');
-            years.forEach(year => {
+            years.forEach(year => {{
                 const option = document.createElement('option');
                 option.value = year;
                 option.textContent = year;
                 yearFilter.appendChild(option);
-            });
-        }
+            }});
+        }}
         
-        function updateCharts() {
+        function updateCharts() {{
             // Placeholder for chart updates based on filters
             const theme = document.getElementById('themeFilter').value;
             const year = document.getElementById('yearFilter').value;
             
-            console.log('Updating charts with filters:', { theme, year });
+            console.log('Updating charts with filters:', {{ theme, year }});
             // In a real implementation, this would filter and update chart data
-        }
+        }}
         
-        function exportData() {
+        function exportData() {{
             // Create and download analytics report
             const dataStr = JSON.stringify(analyticsData, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const dataBlob = new Blob([dataStr], {{type: 'application/json'}});
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
             link.download = 'lego_analytics_' + new Date().toISOString().split('T')[0] + '.json';
             link.click();
             URL.revokeObjectURL(url);
-        }
+        }}
     </script>
 </body>
 </html>
+        """
         
+        output_file = output_dir / "analytics.html"
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        
+        logger.info(f"Enhanced analytics page generated: {output_file}")
+        return str(output_file)
+        
+    except Exception as e:
+        logger.error(f"Failed to generate analytics page: {e}")
+        return ""
+
+
+def calculate_analytics(sets_df, minifigs_df):
+    """Calculate comprehensive analytics from the data"""
+    try:
+        # Basic statistics
+        total_sets = len(sets_df)
+        total_minifigs = len(minifigs_df)
+        
+        # Convert numeric columns
+        sets_df['pieces_num'] = pd.to_numeric(sets_df['pieces_numeric'], errors='coerce').fillna(0)
+        sets_df['price_gbp_num'] = pd.to_numeric(sets_df['retail_price_gbp'].str.replace('£', '').str.replace(',', ''), errors='coerce').fillna(0)
+        
+        avg_pieces = sets_df['pieces_num'].mean()
+        avg_price = sets_df[sets_df['price_gbp_num'] > 0]['price_gbp_num'].mean()
+        
+        # Extract years
+        sets_df['year'] = sets_df['released'].str.extract(r'(\d{4})')[0]
+        years = sets_df['year'].dropna().unique()
+        years_span = len(years)
+        
+        # Theme distribution
+        theme_counts = sets_df['theme'].value_counts()
+        theme_distribution = {
+            'labels': theme_counts.index.tolist(),
+            'values': theme_counts.values.tolist()
+        }
+        
+        # Year distribution
+        year_counts = sets_df['year'].value_counts().sort_index()
+        year_distribution = {
+            'labels': year_counts.index.tolist(),
+            'values': year_counts.values.tolist()
+        }
+        
+        # Pieces distribution (grouped)
+        pieces_ranges = ['0-100', '101-300', '301-500', '501-1000', '1000+']
+        pieces_counts = []
+        for i, range_label in enumerate(pieces_ranges):
+            if i == 0:
+                count = len(sets_df[sets_df['pieces_num'] <= 100])
+            elif i == 1:
+                count = len(sets_df[(sets_df['pieces_num'] > 100) & (sets_df['pieces_num'] <= 300)])
+            elif i == 2:
+                count = len(sets_df[(sets_df['pieces_num'] > 300) & (sets_df['pieces_num'] <= 500)])
+            elif i == 3:
+                count = len(sets_df[(sets_df['pieces_num'] > 500) & (sets_df['pieces_num'] <= 1000)])
+            else:
+                count = len(sets_df[sets_df['pieces_num'] > 1000])
+            pieces_counts.append(count)
+        
+        pieces_distribution = {
+            'labels': pieces_ranges,
+            'values': pieces_counts
+        }
+        
+        # Price vs pieces correlation
+        valid_data = sets_df[(sets_df['pieces_num'] > 0) & (sets_df['price_gbp_num'] > 0)]
+        price_pieces_correlation = [
+            {'x': row['pieces_num'], 'y': row['price_gbp_num']} 
+            for _, row in valid_data.iterrows()
+        ]
+        
+        # Top sets by pieces
+        top_sets = sets_df.nlargest(10, 'pieces_num')[['lego_code', 'official_name', 'pieces_num', 'theme', 'retail_price_gbp']].to_dict('records')
+        
+        return {
+            'total_sets': total_sets,
+            'total_minifigs': total_minifigs,
+            'avg_pieces': avg_pieces if not pd.isna(avg_pieces) else 0,
+            'avg_price': avg_price if not pd.isna(avg_price) else 0,
+            'years_span': years_span,
+            'theme_distribution': theme_distribution,
+            'year_distribution': year_distribution,
+            'pieces_distribution': pieces_distribution,
+            'price_pieces_correlation': price_pieces_correlation,
+            'top_sets': top_sets
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to calculate analytics: {e}")
+        return {
+            'total_sets': 0,
+            'total_minifigs': 0,
+            'avg_pieces': 0,
+            'avg_price': 0,
+            'years_span': 0,
+            'theme_distribution': {'labels': [], 'values': []},
+            'year_distribution': {'labels': [], 'values': []},
+            'pieces_distribution': {'labels': [], 'values': []},
+            'price_pieces_correlation': [],
+            'top_sets': []
+        }
+
+
+def generate_top_sets_table(top_sets):
+    """Generate HTML table rows for top sets"""
+    if not top_sets:
+        return "<tr><td colspan='5'>No data available</td></tr>"
+    
+    rows = []
+    for set_data in top_sets:
+        rows.append(f"""
+            <tr>
+                <td>{set_data.get('lego_code', 'N/A')}</td>
+                <td>{set_data.get('official_name', 'N/A')}</td>
+                <td>{set_data.get('pieces_num', 0):,.0f}</td>
+                <td>{set_data.get('theme', 'N/A')}</td>
+                <td>{set_data.get('retail_price_gbp', 'N/A')}</td>
+            </tr>
+        """)
+    
+    return ''.join(rows)
+
+
+if __name__ == "__main__":
+    analytics_page = generate_analytics_page()
+    print(f"✅ Enhanced analytics page created: {analytics_page}")

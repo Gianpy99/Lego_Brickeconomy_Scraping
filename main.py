@@ -1,7 +1,7 @@
 """
 Enhanced LEGO Database Main Interface
 Creates a comprehensive web interface that combines both LEGO sets and minifigures
-with unified database management and beautiful web presentation
+with unified database management, advanced logging, and beautiful web presentation
 """
 
 import sys
@@ -10,164 +10,181 @@ import sqlite3
 import pandas as pd
 from datetime import datetime
 from typing import Dict, List, Optional
+import time
+
+# Import enhanced modules
+from database_manager import get_database_manager, DatabaseStats
+from logging_system import setup_logging, get_logger
+from exceptions import DatabaseError, handle_exception
 
 # Import the existing modules
 from lego_database import main as lego_main, create_lego_database, export_database
 from minifig_database import main as minifig_main, create_minifig_database, export_minifig_database
 
-class LegoUnifiedDatabase:
-    """Unified database manager for both LEGO sets and minifigures"""
+# Setup enhanced logging
+logger_system = setup_logging("LegoMainInterface")
+logger = get_logger(__name__)
+
+
+class EnhancedLegoUnifiedDatabase:
+    """Enhanced unified database manager with advanced features"""
     
     def __init__(self, db_path: str = "lego_database/LegoDatabase.db"):
+        self.db_manager = get_database_manager(db_path)
         self.db_path = db_path
-        self.ensure_database_exists()
+        logger.info(f"Enhanced database system initialized: {db_path}")
     
-    def ensure_database_exists(self):
-        """Ensure the database directory and file exist"""
-        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+    def get_enhanced_stats(self) -> Dict:
+        """Get comprehensive statistics with performance metrics"""
+        start_time = time.time()
         
-        # Create database with both tables if they don't exist
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
+        try:
+            # Get database statistics
+            db_stats = self.db_manager.get_comprehensive_stats()
             
-            # Create lego_sets table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS lego_sets (
-                    lego_code TEXT PRIMARY KEY,
-                    official_name TEXT,
-                    number_of_pieces TEXT,
-                    number_of_minifigs TEXT,
-                    released TEXT,
-                    retired TEXT,
-                    retail_price_eur TEXT,
-                    retail_price_gbp TEXT,
-                    value_new_sealed TEXT,
-                    value_used TEXT,
-                    image_url TEXT,
-                    image_path TEXT,
-                    theme TEXT,
-                    subtheme TEXT,
-                    has_image INTEGER,
-                    pieces_numeric INTEGER,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            
-            # Create minifig table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS minifig (
-                    minifig_code TEXT PRIMARY KEY,
-                    official_name TEXT,
-                    year TEXT,
-                    released TEXT,
-                    retail_price_gbp TEXT,
-                    has_image INTEGER,
-                    image_path TEXT,
-                    sets TEXT,
-                    theme TEXT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """)
-            
-            conn.commit()
-    
-    def get_stats(self) -> Dict:
-        """Get comprehensive statistics from both databases"""
-        with sqlite3.connect(self.db_path) as conn:
-            stats = {}
-            
-            # LEGO Sets stats
-            try:
-                sets_df = pd.read_sql_query("SELECT * FROM lego_sets", conn)
-                stats['sets'] = {
-                    'total': len(sets_df),
-                    'found': len(sets_df[(sets_df['official_name'].notna()) & 
-                                       (sets_df['official_name'] != 'Not found') & 
-                                       (sets_df['official_name'] != 'Error')]),
-                    'with_images': len(sets_df[sets_df['has_image'] == 1]),
-                    'themes': sets_df[sets_df['theme'].notna() & (sets_df['theme'] != 'Not found')]['theme'].nunique(),
-                    'total_pieces': sets_df['pieces_numeric'].sum() if 'pieces_numeric' in sets_df.columns else 0,
-                    'last_updated': self._get_last_update('lego_sets')
+            # Convert to legacy format for compatibility
+            stats = {
+                'sets': {
+                    'total': db_stats.total_sets,
+                    'found': db_stats.found_sets,
+                    'with_images': db_stats.sets_with_images,
+                    'themes': db_stats.unique_themes,
+                    'total_pieces': 0,  # TODO: Calculate from pieces_numeric
+                    'last_updated': db_stats.last_updated,
+                    'success_rate': (db_stats.found_sets / db_stats.total_sets * 100) if db_stats.total_sets > 0 else 0
+                },
+                'minifigs': {
+                    'total': db_stats.total_minifigs,
+                    'found': db_stats.found_minifigs,
+                    'with_images': db_stats.minifigs_with_images,
+                    'unique_years': db_stats.unique_years,
+                    'last_updated': db_stats.last_updated,
+                    'success_rate': (db_stats.found_minifigs / db_stats.total_minifigs * 100) if db_stats.total_minifigs > 0 else 0
+                },
+                'database': {
+                    'size_mb': db_stats.database_size_mb,
+                    'total_records': db_stats.total_sets + db_stats.total_minifigs,
+                    'last_optimized': 'Unknown'  # TODO: Get from metadata
                 }
-            except Exception as e:
-                print(f"⚠️ Warning: Could not load LEGO sets data: {e}")
-                stats['sets'] = {'total': 0, 'found': 0, 'with_images': 0, 'themes': 0, 'total_pieces': 0, 'last_updated': 'Never'}
+            }
             
-            # Minifigs stats
-            try:
-                minifig_df = pd.read_sql_query("SELECT * FROM minifig", conn)
-                stats['minifigs'] = {
-                    'total': len(minifig_df),
-                    'found': len(minifig_df[(minifig_df['official_name'].notna()) & 
-                                          (minifig_df['official_name'] != 'Not found') & 
-                                          (minifig_df['official_name'] != 'Error')]),
-                    'with_images': len(minifig_df[minifig_df['has_image'] == 1]),
-                    'unique_years': minifig_df[minifig_df['year'].notna()]['year'].nunique(),
-                    'last_updated': self._get_last_update('minifig')
-                }
-            except Exception as e:
-                print(f"⚠️ Warning: Could not load minifigures data: {e}")
-                stats['minifigs'] = {'total': 0, 'found': 0, 'with_images': 0, 'unique_years': 0, 'last_updated': 'Never'}
+            duration = time.time() - start_time
+            logger.debug(f"Statistics calculated in {duration:.3f}s")
             
             return stats
+            
+        except Exception as e:
+            logger.error(f"Failed to get enhanced stats: {e}")
+            return self._get_fallback_stats()
     
-    def _get_last_update(self, table_name: str) -> str:
-        """Get the last update time for a table"""
+    def _get_fallback_stats(self) -> Dict:
+        """Fallback statistics method using original approach"""
         try:
             with sqlite3.connect(self.db_path) as conn:
-                cursor = conn.cursor()
-                cursor.execute(f"SELECT MAX(created_at) FROM {table_name}")
-                result = cursor.fetchone()
-                if result and result[0]:
-                    return result[0]
-                else:
-                    return "Never"
-        except:
-            return "Unknown"
-    
-    def get_detailed_stats(self) -> Dict:
-        """Get detailed statistics for advanced analysis"""
-        with sqlite3.connect(self.db_path) as conn:
-            detailed_stats = {}
-            
-            try:
-                # LEGO Sets detailed analysis
-                sets_df = pd.read_sql_query("SELECT * FROM lego_sets", conn)
-                if not sets_df.empty:
-                    detailed_stats['sets'] = {
-                        'by_theme': sets_df[sets_df['theme'].notna() & (sets_df['theme'] != 'Not found')]['theme'].value_counts().to_dict(),
-                        'by_year': sets_df[sets_df['released'].notna()]['released'].value_counts().head(10).to_dict(),
-                        'piece_distribution': {
-                            'min': sets_df['pieces_numeric'].min() if 'pieces_numeric' in sets_df.columns else 0,
-                            'max': sets_df['pieces_numeric'].max() if 'pieces_numeric' in sets_df.columns else 0,
-                            'avg': sets_df['pieces_numeric'].mean() if 'pieces_numeric' in sets_df.columns else 0
-                        },
-                        'completion_rate': len(sets_df[sets_df['official_name'].notna() & (sets_df['official_name'] != 'Not found') & (sets_df['official_name'] != 'Error')]) / len(sets_df) * 100 if len(sets_df) > 0 else 0
-                    }
-                else:
-                    detailed_stats['sets'] = {'by_theme': {}, 'by_year': {}, 'piece_distribution': {}, 'completion_rate': 0}
+                stats = {}
                 
-                # Minifigs detailed analysis
-                minifig_df = pd.read_sql_query("SELECT * FROM minifig", conn)
-                if not minifig_df.empty:
-                    detailed_stats['minifigs'] = {
-                        'by_year': minifig_df[minifig_df['year'].notna()]['year'].value_counts().to_dict(),
-                        'by_theme': minifig_df[minifig_df['theme'].notna() & (minifig_df['theme'] != 'Not found')]['theme'].value_counts().to_dict(),
-                        'completion_rate': len(minifig_df[minifig_df['official_name'].notna() & (minifig_df['official_name'] != 'Not found') & (minifig_df['official_name'] != 'Error')]) / len(minifig_df) * 100 if len(minifig_df) > 0 else 0
+                # LEGO Sets stats
+                try:
+                    sets_df = pd.read_sql_query("SELECT * FROM lego_sets", conn)
+                    stats['sets'] = {
+                        'total': len(sets_df),
+                        'found': len(sets_df[(sets_df['official_name'].notna()) & 
+                                           (sets_df['official_name'] != 'Not found') & 
+                                           (sets_df['official_name'] != 'Error')]),
+                        'with_images': len(sets_df[sets_df['has_image'] == 1]),
+                        'themes': sets_df[sets_df['theme'].notna() & (sets_df['theme'] != 'Not found')]['theme'].nunique(),
+                        'total_pieces': sets_df['pieces_numeric'].sum() if 'pieces_numeric' in sets_df.columns else 0,
+                        'last_updated': 'Unknown'
                     }
-                else:
-                    detailed_stats['minifigs'] = {'by_year': {}, 'by_theme': {}, 'completion_rate': 0}
-                    
-            except Exception as e:
-                print(f"⚠️ Warning: Could not generate detailed stats: {e}")
-                detailed_stats = {'sets': {}, 'minifigs': {}}
-            
-            return detailed_stats
+                except Exception as e:
+                    logger.warning(f"Could not load LEGO sets data: {e}")
+                    stats['sets'] = {'total': 0, 'found': 0, 'with_images': 0, 'themes': 0, 'total_pieces': 0, 'last_updated': 'Never'}
+                
+                # Minifigs stats
+                try:
+                    minifig_df = pd.read_sql_query("SELECT * FROM minifig", conn)
+                    stats['minifigs'] = {
+                        'total': len(minifig_df),
+                        'found': len(minifig_df[(minifig_df['official_name'].notna()) & 
+                                              (minifig_df['official_name'] != 'Not found') & 
+                                              (minifig_df['official_name'] != 'Error')]),
+                        'with_images': len(minifig_df[minifig_df['has_image'] == 1]),
+                        'unique_years': minifig_df[minifig_df['year'].notna() & (minifig_df['year'] != 'Not found')]['year'].nunique(),
+                        'last_updated': 'Unknown'
+                    }
+                except Exception as e:
+                    logger.warning(f"Could not load minifig data: {e}")
+                    stats['minifigs'] = {'total': 0, 'found': 0, 'with_images': 0, 'unique_years': 0, 'last_updated': 'Never'}
+                
+                return stats
+                
+        except Exception as e:
+            logger.error(f"Fallback stats failed: {e}")
+            return {
+                'sets': {'total': 0, 'found': 0, 'with_images': 0, 'themes': 0, 'total_pieces': 0, 'last_updated': 'Error'},
+                'minifigs': {'total': 0, 'found': 0, 'with_images': 0, 'unique_years': 0, 'last_updated': 'Error'}
+            }
+    
+    def backup_database(self) -> str:
+        """Create database backup"""
+        try:
+            backup_path = self.db_manager.backup_database()
+            logger.info(f"Database backup created: {backup_path}")
+            return backup_path
+        except Exception as e:
+            logger.error(f"Backup failed: {e}")
+            raise
+    
+    def optimize_database(self):
+        """Optimize database performance"""
+        try:
+            logger.info("Starting database optimization...")
+            self.db_manager.optimize_database()
+            logger.info("Database optimization completed")
+        except Exception as e:
+            logger.error(f"Optimization failed: {e}")
+            raise
+
 
 def view_detailed_analytics():
     """Display detailed analytics and breakdowns"""
-    db = LegoUnifiedDatabase()
-    detailed_stats = db.get_detailed_stats()
+    db = EnhancedEnhancedLegoUnifiedDatabase()
+    
+    try:
+        # Use database manager for detailed analytics
+        with sqlite3.connect(db.db_path) as conn:
+            detailed_stats = {}
+            
+            # LEGO Sets detailed analysis
+            sets_df = pd.read_sql_query("SELECT * FROM lego_sets", conn)
+            if not sets_df.empty:
+                detailed_stats['sets'] = {
+                    'by_theme': sets_df[sets_df['theme'].notna() & (sets_df['theme'] != 'Not found')]['theme'].value_counts().to_dict(),
+                    'by_year': sets_df[sets_df['released'].notna()]['released'].value_counts().head(10).to_dict(),
+                    'piece_distribution': {
+                        'min': sets_df['pieces_numeric'].min() if 'pieces_numeric' in sets_df.columns else 0,
+                        'max': sets_df['pieces_numeric'].max() if 'pieces_numeric' in sets_df.columns else 0,
+                        'avg': sets_df['pieces_numeric'].mean() if 'pieces_numeric' in sets_df.columns else 0
+                    },
+                    'completion_rate': len(sets_df[sets_df['official_name'].notna() & (sets_df['official_name'] != 'Not found') & (sets_df['official_name'] != 'Error')]) / len(sets_df) * 100 if len(sets_df) > 0 else 0
+                }
+            else:
+                detailed_stats['sets'] = {'by_theme': {}, 'by_year': {}, 'piece_distribution': {}, 'completion_rate': 0}
+            
+            # Minifigs detailed analysis
+            minifig_df = pd.read_sql_query("SELECT * FROM minifig", conn)
+            if not minifig_df.empty:
+                detailed_stats['minifigs'] = {
+                    'by_year': minifig_df[minifig_df['year'].notna()]['year'].value_counts().to_dict(),
+                    'by_theme': minifig_df[minifig_df['theme'].notna() & (minifig_df['theme'] != 'Not found')]['theme'].value_counts().to_dict(),
+                    'completion_rate': len(minifig_df[minifig_df['official_name'].notna() & (minifig_df['official_name'] != 'Not found') & (minifig_df['official_name'] != 'Error')]) / len(minifig_df) * 100 if len(minifig_df) > 0 else 0
+                }
+            else:
+                detailed_stats['minifigs'] = {'by_year': {}, 'by_theme': {}, 'completion_rate': 0}
+    
+    except Exception as e:
+        logger.error(f"Failed to generate detailed stats: {e}")
+        detailed_stats = {'sets': {}, 'minifigs': {}}
     
     print("\n" + "="*70)
     print("📈 DETAILED ANALYTICS & BREAKDOWNS")
@@ -227,11 +244,12 @@ def view_detailed_analytics():
         print("   ✅ Your database is in excellent condition!")
         print("   🌐 Consider generating the web interface to showcase your data")
 
+
 def create_unified_web_interface():
     """Create a comprehensive web interface for the LEGO database"""
     
-    db = LegoUnifiedDatabase()
-    stats = db.get_stats()
+    db = EnhancedEnhancedLegoUnifiedDatabase()
+    stats = db.get_enhanced_stats()
     
     # Generate web interface HTML (keeping the existing implementation but with stats integration)
     html_content = f"""
@@ -620,8 +638,8 @@ def create_unified_web_interface():
 
 def show_menu():
     """Display the main menu with current statistics"""
-    db = LegoUnifiedDatabase()
-    stats = db.get_stats()
+    db = EnhancedLegoUnifiedDatabase()
+    stats = db.get_enhanced_stats()
     
     print("\n" + "="*60)
     print("🧱 LEGO BRICKECONOMY DATABASE SYSTEM")
@@ -644,8 +662,8 @@ def show_menu():
 
 def view_database_stats():
     """Display comprehensive database statistics with better formatting"""
-    db = LegoUnifiedDatabase()
-    stats = db.get_stats()
+    db = EnhancedLegoUnifiedDatabase()
+    stats = db.get_enhanced_stats()
     
     print("\n" + "="*70)
     print("📊 COMPREHENSIVE DATABASE STATISTICS")
@@ -723,7 +741,7 @@ def view_database_stats():
 
 def database_management():
     """Database management submenu"""
-    db = LegoUnifiedDatabase()
+    db = EnhancedLegoUnifiedDatabase()
     
     while True:
         print("\n" + "🗄️ DATABASE MANAGEMENT" + "\n" + "="*40)
@@ -858,7 +876,7 @@ def clear_table(db):
 
 def export_data():
     """Export data in various formats"""
-    db = LegoUnifiedDatabase()
+    db = EnhancedLegoUnifiedDatabase()
     
     print("\n📤 EXPORT DATA")
     print("1. 📊 Export to CSV")
@@ -914,7 +932,7 @@ def export_data():
 
 def create_advanced_analytics_page():
     """Create an advanced analytics dashboard"""
-    db = LegoUnifiedDatabase()
+    db = EnhancedLegoUnifiedDatabase()
     
     with sqlite3.connect(db.db_path) as conn:
         # Get data for analytics
@@ -1241,11 +1259,11 @@ def main():
     print("🚀 Starting LEGO Brickeconomy Database System...")
     
     # Ensure database exists
-    db = LegoUnifiedDatabase()
+    db = EnhancedLegoUnifiedDatabase()
     
     # Show initial stats if database has data
     try:
-        stats = db.get_stats()
+        stats = db.get_enhanced_stats()
         if stats['sets']['total'] > 0 or stats['minifigs']['total'] > 0:
             print(f"\n📊 Current Database: {stats['sets']['total']} sets, {stats['minifigs']['total']} minifigs")
     except:
@@ -1262,7 +1280,7 @@ def main():
                 lego_main()
                 print("✅ LEGO sets database updated successfully!")
                 # Show updated stats
-                stats = db.get_stats()
+                stats = db.get_enhanced_stats()
                 print(f"📊 Now have {stats['sets']['total']} sets ({stats['sets']['found']} found)")
             except Exception as e:
                 print(f"❌ Error updating LEGO sets: {e}")
@@ -1274,7 +1292,7 @@ def main():
                 minifig_main()
                 print("✅ Minifigures database updated successfully!")
                 # Show updated stats
-                stats = db.get_stats()
+                stats = db.get_enhanced_stats()
                 print(f"📊 Now have {stats['minifigs']['total']} minifigs ({stats['minifigs']['found']} found)")
             except Exception as e:
                 print(f"❌ Error updating minifigures: {e}")
@@ -1289,7 +1307,7 @@ def main():
                 minifig_main()
                 print("✅ Both databases updated successfully!")
                 # Show final stats
-                stats = db.get_stats()
+                stats = db.get_enhanced_stats()
                 print(f"📊 Final: {stats['sets']['total']} sets, {stats['minifigs']['total']} minifigs")
             except Exception as e:
                 print(f"❌ Error updating databases: {e}")

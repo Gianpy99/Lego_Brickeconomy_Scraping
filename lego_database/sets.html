@@ -1,0 +1,430 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📦 LEGO Sets Database</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Enhanced responsive styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --text-color: #2c3e50;
+            --light-bg: #f8fafc;
+            --card-shadow: 0 4px 16px rgba(44, 62, 80, 0.08);
+            --border-radius: 12px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .search-section {
+            background: rgba(255,255,255,0.95);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .search-controls {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .search-input {
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--text-color);
+            border: 2px solid #e1e8ed;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .results-info {
+            text-align: center;
+            color: white;
+            margin: 20px 0;
+            font-size: 1.1rem;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .sets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .set-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .set-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        
+        .set-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f8f9fa;
+        }
+        
+        .set-info {
+            padding: 20px;
+        }
+        
+        .set-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .set-details {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 5px 0;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 40px 0;
+        }
+        
+        .page-btn {
+            padding: 8px 16px;
+            border: 2px solid #e1e8ed;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .page-btn:hover, .page-btn.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-boxes"></i> LEGO Sets Database</h1>
+            <p>Browse and search through 52 LEGO sets</p>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-controls">
+                <input type="text" id="setSearch" class="search-input" placeholder="🔍 Search sets by name, code, or theme...">
+                <select id="themeFilter" class="filter-select">
+                    <option value="">All Themes</option>
+                </select>
+                <select id="yearFilter" class="filter-select">
+                    <option value="">All Years</option>
+                </select>
+                <select id="sortBy" class="filter-select">
+                    <option value="code">Sort by Code</option>
+                    <option value="name">Sort by Name</option>
+                    <option value="pieces">Sort by Pieces</option>
+                    <option value="released">Sort by Release Date</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="resultsInfo" class="results-info"></div>
+        <div id="setsGrid" class="sets-grid"></div>
+        <div id="pagination" class="pagination"></div>
+        
+        <div class="footer">
+            <a href="index.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Main
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        const setsData = [{"code": "10237", "name": "10237 Tower of Orthanc", "pieces": "2359", "minifigs": "5", "released": "July 2013", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£169.99", "image_path": "lego_database/images/10237.jpg", "has_image": true}, {"code": "10316", "name": "10316 The Lord of the Rings Rivendell", "pieces": "6167", "minifigs": "21", "released": "March 5, 2023", "theme": "Icons", "price_eur": null, "price_gbp": "£429.99", "image_path": "lego_database/images/10316.jpg", "has_image": true}, {"code": "10333", "name": "10333 The Lord of the Rings Barad-Dur", "pieces": "5471", "minifigs": "10", "released": "June 2024", "theme": "Icons", "price_eur": null, "price_gbp": "£399.99", "image_path": "lego_database/images/10333.jpg", "has_image": true}, {"code": "10367", "name": "10367 The Lord of the Rings Balrog Book Nook", "pieces": "1201", "minifigs": "1", "released": "Released", "theme": "Icons", "price_eur": null, "price_gbp": "£109.99", "image_path": "lego_database/images/10367.jpg", "has_image": true}, {"code": "30210", "name": "30210 Frodo with Cooking Corner", "pieces": "33", "minifigs": "1", "released": "July 2012", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£3.15", "image_path": "lego_database/images/30210.jpg", "has_image": true}, {"code": "30211", "name": "30211 Uruk-Hai with Ballista", "pieces": "21", "minifigs": "1", "released": "August 2012", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£3.15", "image_path": "lego_database/images/30211.jpg", "has_image": true}, {"code": "30212", "name": "30212 Mirkwood Elf Guard", "pieces": "27", "minifigs": "1", "released": "November 2012", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£3.94", "image_path": "lego_database/images/30212.jpg", "has_image": true}, {"code": "30213", "name": "30213 Gandalf at Dol Guldur", "pieces": "31", "minifigs": "1", "released": "December 1, 2012", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£3.94", "image_path": "lego_database/images/30213.jpg", "has_image": true}, {"code": "30215", "name": "30215 Legolas Greenleaf", "pieces": "33", "minifigs": "1", "released": "December 2013", "theme": "The Hobbit", "price_eur": "Free promotional", "price_gbp": null, "image_path": "lego_database/images/30215.jpg", "has_image": true}, {"code": "30216", "name": "30216 Lake-town Guard", "pieces": "31", "minifigs": "1", "released": "December 1, 2013", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£3.94", "image_path": "lego_database/images/30216.jpg", "has_image": true}, {"code": "3920", "name": "3920 The Hobbit An Unexpected Journey", "pieces": "394", "minifigs": "4", "released": "October 3, 2012", "theme": "Games", "price_eur": null, "price_gbp": "£24.99", "image_path": "lego_database/images/3920.jpg", "has_image": true}, {"code": "40630", "name": "40630 Frodo & Gollum", "pieces": "184", "minifigs": null, "released": "January 2023", "theme": "BrickHeadz", "price_eur": null, "price_gbp": "£13.49", "image_path": "lego_database/images/40630.jpg", "has_image": true}, {"code": "40631", "name": "40631 Gandalf the Grey and Balrog", "pieces": "348", "minifigs": null, "released": "January 2023", "theme": "BrickHeadz", "price_eur": null, "price_gbp": "£17.99", "image_path": "lego_database/images/40631.jpg", "has_image": true}, {"code": "40632", "name": "40632 Aragorn and Arwen", "pieces": "261", "minifigs": null, "released": "January 2023", "theme": "BrickHeadz", "price_eur": null, "price_gbp": "£17.99", "image_path": "lego_database/images/40632.jpg", "has_image": true}, {"code": "40693", "name": "40693 Fell Beast", "pieces": "269", "minifigs": "1", "released": "June 1, 2024", "theme": "Icons", "price_eur": "Free promotional", "price_gbp": null, "image_path": "lego_database/images/40693.jpg", "has_image": true}, {"code": "40751", "name": "40751 Legolas & Gimli", "pieces": "297", "minifigs": null, "released": "June 2024", "theme": "BrickHeadz", "price_eur": null, "price_gbp": "£17.99", "image_path": "lego_database/images/40751.jpg", "has_image": true}, {"code": "5000202", "name": "5000202 Elrond", "pieces": "6", "minifigs": "1", "released": null, "theme": "The Lord of the Rings", "price_eur": "Free promotional", "price_gbp": null, "image_path": "lego_database/images/5000202.jpg", "has_image": true}, {"code": "50011", "name": "50011 The Battle of Helms Deep", "pieces": "338", "minifigs": "28", "released": "August 2013", "theme": "Games", "price_eur": null, "price_gbp": "£29.99", "image_path": "lego_database/images/50011.jpg", "has_image": true}, {"code": "71171", "name": "71171 Starter Pack PS4", "pieces": "269", "minifigs": "3", "released": "September 29, 2015", "theme": "Dimensions", "price_eur": null, "price_gbp": "£99.99", "image_path": "lego_database/images/71171.jpg", "has_image": true}, {"code": "71218", "name": "71218 Gollum", "pieces": "39", "minifigs": "1", "released": "September 29, 2015", "theme": "Dimensions", "price_eur": null, "price_gbp": "£14.99", "image_path": "lego_database/images/71218.jpg", "has_image": true}, {"code": "71219", "name": "71219 Legolas", "pieces": "36", "minifigs": "1", "released": "September 29, 2015", "theme": "Dimensions", "price_eur": null, "price_gbp": "£14.99", "image_path": "lego_database/images/71219.jpg", "has_image": true}, {"code": "71220", "name": "71220 Gimli", "pieces": "56", "minifigs": "1", "released": "September 29, 2015", "theme": "Dimensions", "price_eur": null, "price_gbp": "£14.99", "image_path": "lego_database/images/71220.jpg", "has_image": true}, {"code": "79000", "name": "79000 Riddles for the Ring", "pieces": "105", "minifigs": "2", "released": "November 27, 2012", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£11.99", "image_path": "lego_database/images/79000.jpg", "has_image": true}, {"code": "79001", "name": "79001 Escape from Mirkwood Spiders", "pieces": "298", "minifigs": "4", "released": "November 27, 2012", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£24.99", "image_path": "lego_database/images/79001.jpg", "has_image": true}, {"code": "79002", "name": "79002 Attack of the Wargs", "pieces": "400", "minifigs": "5", "released": "November 27, 2012", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£49.99", "image_path": "lego_database/images/79002.jpg", "has_image": true}, {"code": "79003", "name": "79003 An Unexpected Gathering", "pieces": "652", "minifigs": "6", "released": "November 27, 2012", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£59.99", "image_path": "lego_database/images/79003.jpg", "has_image": true}, {"code": "79004", "name": "79004 Barrel Escape", "pieces": "334", "minifigs": "5", "released": "November 27, 2012", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£39.99", "image_path": "lego_database/images/79004.jpg", "has_image": true}, {"code": "79005", "name": "79005 The Wizard Battle", "pieces": "113", "minifigs": "2", "released": "June 2013", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£11.99", "image_path": "lego_database/images/79005.jpg", "has_image": true}, {"code": "79006", "name": "79006 The Council of Elrond", "pieces": "243", "minifigs": "4", "released": "June 2013", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£29.99", "image_path": "lego_database/images/79006.jpg", "has_image": true}, {"code": "79007", "name": "79007 Battle at the Black Gate", "pieces": "656", "minifigs": "5", "released": "June 7, 2013", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£59.99", "image_path": "lego_database/images/79007.jpg", "has_image": true}, {"code": "79008", "name": "79008 Pirate Ship Ambush", "pieces": "756", "minifigs": "9", "released": "June 2013", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£89.99", "image_path": "lego_database/images/79008.jpg", "has_image": true}, {"code": "79010", "name": "79010 The Goblin King Battle", "pieces": "841", "minifigs": "8", "released": "November 27, 2012", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£79.99", "image_path": "lego_database/images/79010.jpg", "has_image": true}, {"code": "79011", "name": "79011 Dol Guldur Ambush", "pieces": "217", "minifigs": "3", "released": "December 2, 2013", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£19.99", "image_path": "lego_database/images/79011.jpg", "has_image": true}, {"code": "79012", "name": "79012 Mirkwood Elf Army", "pieces": "276", "minifigs": "6", "released": "December 2, 2013", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£29.99", "image_path": "lego_database/images/79012.jpg", "has_image": true}, {"code": "79013", "name": "79013 Lake-town Chase", "pieces": "470", "minifigs": "5", "released": "December 2, 2013", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£49.99", "image_path": "lego_database/images/79013.jpg", "has_image": true}, {"code": "79014", "name": "79014 Dol Guldur Battle", "pieces": "797", "minifigs": "8", "released": "December 2, 2013", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£69.99", "image_path": "lego_database/images/79014.jpg", "has_image": true}, {"code": "79015", "name": "79015 Witch-King Battle", "pieces": "101", "minifigs": "3", "released": "October 18, 2014", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£11.99", "image_path": "lego_database/images/79015.jpg", "has_image": true}, {"code": "79016", "name": "79016 Attack on Lake-town", "pieces": "313", "minifigs": "5", "released": "October 18, 2014", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£34.99", "image_path": "lego_database/images/79016.jpg", "has_image": true}, {"code": "79017", "name": "79017 The Battle of Five Armies", "pieces": "472", "minifigs": "7", "released": "October 18, 2014", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£59.99", "image_path": "lego_database/images/79017.jpg", "has_image": true}, {"code": "79018", "name": "79018 The Lonely Mountain", "pieces": "866", "minifigs": "5", "released": "October 18, 2014", "theme": "The Hobbit", "price_eur": null, "price_gbp": "£99.99", "image_path": "lego_database/images/79018.jpg", "has_image": true}, {"code": "850514", "name": "850514 Mordor Orc Key Chain", "pieces": null, "minifigs": null, "released": "August 28, 2012", "theme": "Gear", "price_eur": null, "price_gbp": "£2.99", "image_path": "lego_database/images/850514.jpg", "has_image": true}, {"code": "850515", "name": "850515 Gandalf the Grey Key Chain", "pieces": null, "minifigs": null, "released": "August 28, 2012", "theme": "Gear", "price_eur": null, "price_gbp": "£2.99", "image_path": "lego_database/images/850515.jpg", "has_image": true}, {"code": "850516", "name": "850516 Gimli Key Chain", "pieces": null, "minifigs": null, "released": "August 28, 2012", "theme": "Gear", "price_eur": null, "price_gbp": "£2.99", "image_path": "lego_database/images/850516.jpg", "has_image": true}, {"code": "850674", "name": "850674 Frodo Baggins Key Chain", "pieces": null, "minifigs": null, "released": "March 2013", "theme": "Gear", "price_eur": null, "price_gbp": "£2.99", "image_path": "lego_database/images/850674.jpg", "has_image": true}, {"code": "850680", "name": "850680 Bilbo Baggins Key Chain", "pieces": null, "minifigs": null, "released": "March 2013", "theme": "Gear", "price_eur": null, "price_gbp": "£2.99", "image_path": "lego_database/images/850680.jpg", "has_image": true}, {"code": "9469", "name": "9469 The Lord of the Rings The Fellowship of the Ring Gandalf Arrives", "pieces": "83", "minifigs": "2", "released": "May 16, 2012", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£11.99", "image_path": "lego_database/images/9469.jpg", "has_image": true}, {"code": "9470", "name": "9470 Shelob Attacks", "pieces": "227", "minifigs": "3", "released": "May 16, 2012", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£19.99", "image_path": "lego_database/images/9470.jpg", "has_image": true}, {"code": "9471", "name": "9471 The Lord of the Rings The Two Towers Uruk-Hai Army", "pieces": "257", "minifigs": "6", "released": "May 16, 2012", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£29.99", "image_path": "lego_database/images/9471.jpg", "has_image": true}, {"code": "9472", "name": "9472 Attack On Weathertop", "pieces": "430", "minifigs": "5", "released": "May 16, 2012", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£49.99", "image_path": "lego_database/images/9472.jpg", "has_image": true}, {"code": "9473", "name": "9473 The Mines of Moria", "pieces": "776", "minifigs": "9", "released": "May 16, 2012", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£69.99", "image_path": "lego_database/images/9473.jpg", "has_image": true}, {"code": "9474", "name": "9474 The Battle Of Helm's Deep", "pieces": "1368", "minifigs": "8", "released": "May 16, 2012", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£99.99", "image_path": "lego_database/images/9474.jpg", "has_image": true}, {"code": "9476", "name": "9476 The Orc Forge", "pieces": "366", "minifigs": "4", "released": "May 16, 2012", "theme": "The Lord of the Rings", "price_eur": null, "price_gbp": "£39.99", "image_path": "lego_database/images/9476.jpg", "has_image": true}];
+        let filteredData = [...setsData];
+        let currentPage = 1;
+        const itemsPerPage = 12;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFilters();
+            renderSets();
+        });
+        
+        function initializeFilters() {
+            // Populate theme filter
+            const themes = [...new Set(setsData.map(set => set.theme).filter(Boolean))];
+            const themeFilter = document.getElementById('themeFilter');
+            themes.forEach(theme => {
+                const option = document.createElement('option');
+                option.value = theme;
+                option.textContent = theme;
+                themeFilter.appendChild(option);
+            });
+            
+            // Populate year filter
+            const years = [...new Set(setsData.map(set => {
+                const match = set.released.match(/\d{4}/);
+                return match ? match[0] : '';
+            }))].filter(Boolean).sort().reverse();
+            
+            const yearFilter = document.getElementById('yearFilter');
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearFilter.appendChild(option);
+            });
+            
+            // Add event listeners
+            document.getElementById('setSearch').addEventListener('input', filterSets);
+            document.getElementById('themeFilter').addEventListener('change', filterSets);
+            document.getElementById('yearFilter').addEventListener('change', filterSets);
+            document.getElementById('sortBy').addEventListener('change', filterSets);
+        }
+        
+        function filterSets() {
+            const searchTerm = document.getElementById('setSearch').value.toLowerCase();
+            const themeFilter = document.getElementById('themeFilter').value;
+            const yearFilter = document.getElementById('yearFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+            
+            filteredData = setsData.filter(set => {
+                const matchesSearch = !searchTerm || 
+                    set.name.toLowerCase().includes(searchTerm) ||
+                    set.code.toLowerCase().includes(searchTerm) ||
+                    set.theme.toLowerCase().includes(searchTerm);
+                    
+                const matchesTheme = !themeFilter || set.theme === themeFilter;
+                const matchesYear = !yearFilter || set.released.includes(yearFilter);
+                
+                return matchesSearch && matchesTheme && matchesYear;
+            });
+            
+            // Sort data
+            filteredData.sort((a, b) => {
+                switch(sortBy) {
+                    case 'name': return a.name.localeCompare(b.name);
+                    case 'pieces': return (parseInt(a.pieces) || 0) - (parseInt(b.pieces) || 0);
+                    case 'released': return new Date(a.released) - new Date(b.released);
+                    default: return a.code.localeCompare(b.code);
+                }
+            });
+            
+            currentPage = 1;
+            renderSets();
+        }
+        
+        function renderSets() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredData.slice(startIndex, endIndex);
+            
+            const grid = document.getElementById('setsGrid');
+            
+            if (pageData.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 20px;"></i>
+                        <h3>No sets found</h3>
+                        <p>Try adjusting your search criteria</p>
+                    </div>
+                `;
+            } else {
+                grid.innerHTML = pageData.map(set => `
+                    <div class="set-card">
+                        ${set.has_image ? 
+                            `<img src="${set.image_path}" alt="LEGO ${set.code}" class="set-image" loading="lazy">` :
+                            `<div class="set-image" style="display: flex; align-items: center; justify-content: center; background: #f8f9fa; color: #666;">
+                                <i class="fas fa-image" style="font-size: 2rem;"></i>
+                            </div>`
+                        }
+                        <div class="set-info">
+                            <div class="set-title">${set.code}: ${set.name}</div>
+                            <div class="set-details"><i class="fas fa-puzzle-piece"></i> ${set.pieces} pieces</div>
+                            <div class="set-details"><i class="fas fa-users"></i> ${set.minifigs} minifigs</div>
+                            <div class="set-details"><i class="fas fa-calendar"></i> ${set.released}</div>
+                            <div class="set-details"><i class="fas fa-tag"></i> ${set.theme}</div>
+                            ${set.price_gbp ? `<div class="set-details"><i class="fas fa-pound-sign"></i> ${set.price_gbp}</div>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            renderPagination();
+            updateResultsInfo();
+        }
+        
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            if (currentPage > 1) {
+                paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage - 1})">
+                    <i class="fas fa-chevron-left"></i>
+                </button>`;
+            }
+            
+            // Page numbers
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+                paginationHTML += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                    ${i}
+                </button>`;
+            }
+            
+            // Next button
+            if (currentPage < totalPages) {
+                paginationHTML += `<button class="page-btn" onclick="changePage(${currentPage + 1})">
+                    <i class="fas fa-chevron-right"></i>
+                </button>`;
+            }
+            
+            pagination.innerHTML = paginationHTML;
+        }
+        
+        function changePage(page) {
+            currentPage = page;
+            renderSets();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function updateResultsInfo() {
+            const startIndex = (currentPage - 1) * itemsPerPage + 1;
+            const endIndex = Math.min(currentPage * itemsPerPage, filteredData.length);
+            const total = filteredData.length;
+            
+            document.getElementById('resultsInfo').innerHTML = `
+                <p style="text-align: center; color: #666; margin: 20px 0;">
+                    Showing ${startIndex}-${endIndex} of ${total} sets
+                </p>
+            `;
+        }
+    </script>
+</body>
+</html>
+            

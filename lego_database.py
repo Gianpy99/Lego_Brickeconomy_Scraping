@@ -7,8 +7,13 @@ import os
 import requests
 import time
 from typing import List, Dict, Optional
+from selenium import webdriver
 from selenium.webdriver.common.by import By
-from public_scraper import PublicLegoScraper
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from config import Config
 import pandas as pd
 import sqlite3
@@ -68,7 +73,88 @@ class LegoImageDatabase:
             print(f"    ❌ Failed to download image: {str(e)}")
             return None
 
-class EnhancedLegoScraper(PublicLegoScraper):
+class BaseLegoScraper:
+    """Base scraper class for LEGO sets with essential functionality"""
+    
+    def __init__(self, config: Config):
+        self.config = config
+        self.driver = None
+        
+    def setup_driver(self):
+        """Setup Chrome driver with proper configuration"""
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--window-size=1920,1080')
+        
+        service = Service(ChromeDriverManager().install())
+        self.driver = webdriver.Chrome(service=service, options=options)
+        return self.driver
+    
+    def extract_public_set_data(self, lego_code: str) -> Dict:
+        """Extract basic LEGO set data from BrickEconomy"""
+        from models import LegoSetDetails
+        
+        default_details = LegoSetDetails(
+            lego_code=lego_code,
+            official_name="Not found",
+            number_of_pieces="Not found",
+            number_of_minifigs="Not found",
+            released="Not found",
+            retired="Not found",
+            retail_price_eur="Not found",
+            retail_price_gbp="Not found",
+            value_new_sealed="Not found",
+            value_used="Not found"
+        )
+        
+        try:
+            # Navigate to the set page
+            url = f"https://www.brickeconomy.com/set/{lego_code}"
+            self.driver.get(url)
+            
+            wait = WebDriverWait(self.driver, 10)
+            
+            # Extract set name
+            try:
+                name_element = wait.until(EC.presence_of_element_located((By.TAG_NAME, "h1")))
+                default_details.official_name = name_element.text.strip()
+            except:
+                pass
+            
+            # Extract other details using basic selectors
+            selectors = {
+                'number_of_pieces': "//td[contains(text(), 'Pieces')]/following-sibling::td[1]",
+                'number_of_minifigs': "//td[contains(text(), 'Minifigs')]/following-sibling::td[1]",
+                'released': "//td[contains(text(), 'Released')]/following-sibling::td[1]",
+                'retired': "//td[contains(text(), 'Retired')]/following-sibling::td[1]",
+                'retail_price_eur': "//td[contains(text(), 'RRP EUR')]/following-sibling::td[1]",
+                'retail_price_gbp': "//td[contains(text(), 'RRP GBP')]/following-sibling::td[1]",
+                'value_new_sealed': "//td[contains(text(), 'New Sealed')]/following-sibling::td[1]",
+                'value_used': "//td[contains(text(), 'Used')]/following-sibling::td[1]"
+            }
+            
+            for field, xpath in selectors.items():
+                try:
+                    element = self.driver.find_element(By.XPATH, xpath)
+                    setattr(default_details, field, element.text.strip())
+                except:
+                    pass
+                    
+        except Exception as e:
+            print(f"    ❌ Error extracting data for {lego_code}: {str(e)}")
+        
+        return default_details
+    
+    def close_driver(self):
+        """Close the browser driver"""
+        if self.driver:
+            self.driver.quit()
+
+
+class EnhancedLegoScraper(BaseLegoScraper):
     """Enhanced scraper that extracts images and comprehensive data"""
     
     def __init__(self, config: Config):
